@@ -53,6 +53,56 @@ def _ask(prompt: str, max_tokens: int = 8000) -> str:
     return "".join(b.text for b in msg.content if getattr(b, "type", "") == "text")
 
 
+IDEAS_TOOL = {
+    "name": "submit_ideas",
+    "description": "Submit the scored product ideas.",
+    "input_schema": {
+        "type": "object",
+        "properties": {
+            "ideas": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "name": {"type": "string"}, "one_liner": {"type": "string"}, "category": {"type": "string"},
+                        "problem": {"type": "string"}, "target_buyer": {"type": "string"},
+                        "evidence": {"type": "array", "items": {"type": "object", "properties": {
+                            "signal": {"type": "string"}, "url": {"type": "string"}}}},
+                        "solution": {"type": "string"},
+                        "mvp_features": {"type": "array", "items": {"type": "string"}},
+                        "stack": {"type": "string"}, "build_days": {"type": "integer"},
+                        "monetization": {"type": "object", "properties": {
+                            "model": {"type": "string"}, "price_inr": {"type": "string"}, "price_usd": {"type": "string"}}},
+                        "where_to_sell": {"type": "array", "items": {"type": "string"}},
+                        "competition": {"type": "string"}, "first_10_customers": {"type": "string"}, "risks": {"type": "string"},
+                        "scores": {"type": "object", "properties": {k: {"type": "integer"} for k in
+                                   ("demand", "gap", "build_ease", "fit", "revenue")}},
+                    },
+                    "required": ["name", "one_liner", "problem", "target_buyer", "solution", "monetization", "scores"],
+                },
+            }
+        },
+        "required": ["ideas"],
+    },
+}
+
+
+def _ask_ideas(prompt: str) -> dict:
+    """Forced tool call -> always valid JSON. Falls back to text parsing if needed."""
+    msg = _client().messages.create(
+        model=config.CLAUDE_MODEL,
+        max_tokens=16000,
+        system=SYSTEM,
+        tools=[IDEAS_TOOL],
+        tool_choice={"type": "tool", "name": "submit_ideas"},
+        messages=[{"role": "user", "content": prompt}],
+    )
+    for b in msg.content:
+        if getattr(b, "type", "") == "tool_use":
+            return b.input
+    return _parse_json("".join(getattr(b, "text", "") for b in msg.content))
+
+
 def _parse_json(text: str) -> dict:
     text = text.strip()
     m = re.search(r"```(?:json)?\s*(\{.*\})\s*```", text, re.S)
@@ -89,13 +139,14 @@ Find the {n} best AI agent / AI product opportunities this builder could build a
 - Don't repeat these previously suggested ideas: {avoid_txt}
 - Sort by total score, best first.
 
-Return JSON exactly in this shape:
+Submit them with the submit_ideas tool. Field guide:
 {IDEA_SCHEMA}"""
-    data = _parse_json(_ask(prompt))
+    data = _ask_ideas(prompt)
     ideas = data.get("ideas", [])
     for i in ideas:
         sc = i.get("scores", {})
         i["total"] = sum(int(v) for v in sc.values() if str(v).isdigit())
+        i.setdefault("evidence", []); i.setdefault("mvp_features", []); i.setdefault("where_to_sell", [])
     return sorted(ideas, key=lambda x: x.get("total", 0), reverse=True)
 
 

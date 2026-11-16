@@ -27,6 +27,7 @@ python run_scout.py --offline                # skip scan, Claude-only
 ## Option A: GitHub Actions (free, runs while your PC is off)
 1. Push this folder to a new repo, e.g. `BuiltByGanesh/ai-opportunity-scout`.
 2. Settings → Secrets → Actions: add `ANTHROPIC_API_KEY`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`.
+   Optional: `REDDIT_CLIENT_ID` + `REDDIT_CLIENT_SECRET`. Reddit blocks GitHub's servers, so without these the scan uses HN + GitHub only. To get them, go to reddit.com/prefs/apps → create app → type **script** → redirect `http://localhost`.
 3. It runs every **Monday 08:17 IST**. Actions → *Run workflow* lets you run it on demand with a niche or a plan ID.
 
 ## Option B: Interactive bot on your VPS (Hostinger Docker)

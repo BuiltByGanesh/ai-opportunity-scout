@@ -22,6 +22,11 @@ TELEGRAM_ALLOWED_USERS = {u.strip() for u in os.getenv("TELEGRAM_ALLOWED_USERS",
 
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN", "")                  # optional, raises GitHub API rate limit
 
+# Optional Reddit API app (free, https://www.reddit.com/prefs/apps -> "script"). Needed on GitHub Actions,
+# because Reddit blocks anonymous requests from cloud IPs.
+REDDIT_CLIENT_ID = os.getenv("REDDIT_CLIENT_ID", "")
+REDDIT_CLIENT_SECRET = os.getenv("REDDIT_CLIENT_SECRET", "")
+
 # Who is building/selling. Claude scores "fit" against this.
 BUILDER_PROFILE = os.getenv(
     "BUILDER_PROFILE",
