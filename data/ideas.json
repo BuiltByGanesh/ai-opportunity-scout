@@ -1,0 +1,307 @@
+[
+  {
+    "name": "PingGate",
+    "one_liner": "A Telegram approval layer: any agent, script or GitHub Action pings you with an Approve/Reject/Edit card when it's unsure, then continues.",
+    "category": "Telegram/WhatsApp bot",
+    "problem": "I let agents run in the background but I can't trust them with sends, deploys or spend. I don't want to babysit a terminal. I only want to be asked when it matters.",
+    "target_buyer": "Solo devs, indie hackers and small agencies worldwide who run Claude Code, n8n, GitHub Actions or Python automations. Also Indian agencies running client automations.",
+    "evidence": [
+      {
+        "signal": "agent-autoloop (5.7k): agents work in the background and send a card only when they need a decision",
+        "url": "https://github.com/KKKKhazix/agent-autoloop"
+      },
+      {
+        "signal": "pinky: AI uses your phone 'with you in the loop'",
+        "url": "https://github.com/DIYgod/pinky"
+      },
+      {
+        "signal": "agentes-chat lists approvals as a core feature for agents",
+        "url": "https://github.com/agentes-chat/agentes-chat"
+      },
+      {
+        "signal": "HN: 'Do what must be done' shows agents constantly ask humans for clarification",
+        "url": "https://news.ycombinator.com/item?id=50496383"
+      }
+    ],
+    "solution": "A hosted Telegram bot plus a tiny REST API/CLI/GitHub Action. A workflow POSTs {question, options, context, timeout}. The bot sends an inline-button card, and the reply is returned via webhook or polling. An LLM summarises long context into 3 lines and can auto-approve low-risk requests under rules you set. An audit log is included.",
+    "mvp_features": [
+      "POST /ask endpoint returning a decision via webhook/poll",
+      "Telegram inline buttons: approve, reject, reply with text",
+      "GitHub Action and a Python/Node one-liner SDK",
+      "Timeout and default-action rules",
+      "LLM context summariser",
+      "Per-request audit log"
+    ],
+    "stack": "Python FastAPI, python-telegram-bot, Postgres/SQLite, Docker on Hostinger VPS, Claude Haiku for summaries, Stripe/Razorpay",
+    "build_days": 5,
+    "monetization": {
+      "model": "subscription",
+      "price_inr": "Rs 799/mo (Pro); free up to 50 asks/mo",
+      "price_usd": "$9/mo Pro, $29/mo Team"
+    },
+    "where_to_sell": [
+      "GitHub README + open-source SDK",
+      "Show HN",
+      "r/ClaudeAI and r/n8n",
+      "Dev.to",
+      "Indie Hackers"
+    ],
+    "competition": "HumanLayer and Slack/email approval hacks exist, but they are heavier and enterprise-priced. The gap is a $9 plug-and-play Telegram-native option with a GitHub Action.",
+    "first_10_customers": "Open-source the SDK, post a Show HN and Reddit demos of Claude Code/GitHub Actions asking for approval over Telegram, and add it to your own agency automations. Offer free setup to 10 early users in agent Discords.",
+    "risks": "Easy to clone, and Anthropic or other agent tools may ship native mobile approvals. Needs a distribution hook.",
+    "scores": {
+      "demand": 7,
+      "gap": 6,
+      "build_ease": 9,
+      "fit": 9,
+      "revenue": 6
+    },
+    "total": 37,
+    "id": 1,
+    "date": "2026-11-16",
+    "status": "new",
+    "doc_url": "https://docs.google.com/open?id=1C7H5PROan9qNeAhypYtczgp2tz-QQiZ1c8MIZW082jw",
+    "doc_id": "1C7H5PROan9qNeAhypYtczgp2tz-QQiZ1c8MIZW082jw"
+  },
+  {
+    "name": "NoticeBot for CAs",
+    "one_liner": "A Telegram bot where CA/accounting firms forward GST/IT notices, PDFs and client messages, and it extracts the deadlines, client and action needed into a tracker with reminders.",
+    "category": "Telegram/WhatsApp bot",
+    "problem": "Our staff get hundreds of GST/Income Tax notices and client PDFs in WhatsApp and email. We miss reply deadlines and penalties follow. Nothing tracks them except Excel.",
+    "target_buyer": "Small CA/tax practitioner firms (2-20 staff) in India, plus bookkeeping agencies in tier-1 and tier-2 cities.",
+    "evidence": [
+      {
+        "signal": "Telegram bot powered by Claude that turns forwarded invites, PDFs and posters into tracked events with owners and history. The pattern is proven and could be re-skinned for a boring vertical",
+        "url": "https://github.com/BalthDreadgrid20608/events-rpocket-tracker"
+      },
+      {
+        "signal": "Yogurt: strong interest in private, on-device summarisation for sensitive documents",
+        "url": "https://github.com/FrigadeHQ/yogurt"
+      }
+    ],
+    "solution": "Claude reads the forwarded PDF or image and extracts notice type, section, DIN, client PAN (masked), due date and the required response. It creates a case card with an assignee and sends reminders at T-7/T-3/T-1 days, with a daily digest in Telegram. A draft reply outline is generated for the CA to review.",
+    "mvp_features": [
+      "Forward PDF/image/text to the bot",
+      "LLM extraction to structured case (type, due date, client)",
+      "Reminders and daily digest",
+      "Simple web dashboard with filters",
+      "Assign to staff",
+      "CSV export"
+    ],
+    "stack": "Python Telegram bot, Claude API with PDF input, Laravel or React dashboard, Postgres, Docker on VPS, Razorpay",
+    "build_days": 9,
+    "monetization": {
+      "model": "subscription",
+      "price_inr": "Rs 1,499/mo per firm (up to 5 staff); Rs 4,999 setup for done-for-you onboarding",
+      "price_usd": "$19/mo"
+    },
+    "where_to_sell": [
+      "CA WhatsApp/Telegram groups",
+      "LinkedIn outreach to CA firms in Hyderabad",
+      "ICAI branch events",
+      "YouTube demos"
+    ],
+    "competition": "Practice-management tools like Suvit and TaxPro are heavy and ERP-style. Generic task apps don't read notices. The gap is a forward-and-forget chat workflow.",
+    "first_10_customers": "Offer 10 Hyderabad CA firms a free 30-day pilot on their real backlog. Use a CA acquaintance for introductions and convert at Rs 1,499/mo with referral discounts.",
+    "risks": "Trust and confidentiality concerns around client data. Extraction errors on deadlines carry liability, so human confirmation is needed.",
+    "scores": {
+      "demand": 7,
+      "gap": 7,
+      "build_ease": 7,
+      "fit": 7,
+      "revenue": 7
+    },
+    "total": 35,
+    "id": 2,
+    "date": "2026-11-16",
+    "status": "new",
+    "doc_url": "https://docs.google.com/open?id=1PbjU_pock_T-3Q8zg7f7k-jXLK7ESlk6_PpSgchdNIo",
+    "doc_id": "1PbjU_pock_T-3Q8zg7f7k-jXLK7ESlk6_PpSgchdNIo"
+  },
+  {
+    "name": "BharatMarkets MCP",
+    "one_liner": "A hosted MCP server that gives Claude, ChatGPT and other agents clean, structured Indian market data: NSE/BSE quotes, corporate announcements, results, shareholding and F&O OI.",
+    "category": "SaaS",
+    "problem": "My agent can't reliably get Indian stock data. Scraping NSE breaks, cookies expire, and results PDFs are messy. I waste days maintaining scrapers.",
+    "target_buyer": "Indian retail traders and fintech indie devs building agents, newsletters and research workflows. Quant hobbyists and small advisory/research firms. Also global devs covering India.",
+    "evidence": [
+      {
+        "signal": "Pomerado (YC) turns any website into a deterministic self-healing MCP for agents, which validates demand for site-to-MCP",
+        "url": "https://news.ycombinator.com/item?id=50455811"
+      },
+      {
+        "signal": "Coral gateway where agents call tools against external systems",
+        "url": "https://github.com/withcoral/coral"
+      },
+      {
+        "signal": "Strong traction for MCP-driven agents across many GitHub projects such as kensaku and pinky",
+        "url": "https://github.com/yjid/kensaku"
+      }
+    ],
+    "solution": "Build a maintained MCP layer over NSE/BSE public endpoints and filings. Tools include get_quote, get_announcements(symbol, days), summarize_results_pdf, shareholding_change, option_chain_summary and screen(query). An LLM turns filing PDFs into summaries with citations. Data is cached and rate-limited, and it is research-only.",
+    "mvp_features": [
+      "MCP server with 8-10 tools",
+      "API key auth and usage metering",
+      "Announcement and results PDF summariser",
+      "Caching layer to avoid blocks",
+      "Docs with Claude Desktop config",
+      "Telegram alert example"
+    ],
+    "stack": "Python FastMCP, httpx/Playwright, Redis cache, Postgres, Claude for PDF summaries, Docker on VPS, Stripe",
+    "build_days": 10,
+    "monetization": {
+      "model": "subscription",
+      "price_inr": "Rs 999/mo hobby; Rs 4,999/mo pro",
+      "price_usd": "$12/mo hobby, $49/mo pro"
+    },
+    "where_to_sell": [
+      "r/IndiaInvestments and r/IndianStockMarket",
+      "Twitter/X FinTwit India",
+      "MCP directories",
+      "Telegram trading communities",
+      "Product Hunt"
+    ],
+    "competition": "Screener, Trendlyne and a few unofficial NSE wrappers exist, but few offer a maintained, agent-native MCP with filing summaries. The gap is agent-ready tooling.",
+    "first_10_customers": "Publish a free tier plus tutorial posts such as 'Ask Claude about any NSE announcement'. Pitch Indian fintech devs and Telegram signal channels directly.",
+    "risks": "Data licensing and scraping terms of NSE/BSE, plus SEBI advisory sensitivity. Keep it research-only and use licensed data later.",
+    "scores": {
+      "demand": 6,
+      "gap": 7,
+      "build_ease": 7,
+      "fit": 9,
+      "revenue": 6
+    },
+    "total": 35,
+    "id": 3,
+    "date": "2026-11-16",
+    "status": "new",
+    "doc_url": "https://docs.google.com/open?id=1w52aZWh3h0j8os_K1_vaj-MxMq1MQF_2y7J1QQERu4k",
+    "doc_id": "1w52aZWh3h0j8os_K1_vaj-MxMq1MQF_2y7J1QQERu4k"
+  },
+  {
+    "name": "SendSafe",
+    "one_liner": "An AI pre-send QA agent for email campaigns that opens the real email and landing pages, then checks links, UTMs, tokens, offers and legal copy against the brief before it goes out.",
+    "category": "AI agent",
+    "problem": "One broken link, wrong offer date or unrendered {{first_name}} to 500k customers and I'm explaining it to the VP. Manual checklists are slow and still miss things.",
+    "target_buyer": "Email/CRM campaign managers at retail/e-commerce brands and digital marketing agencies in India and globally who use Salesforce Marketing Cloud, Braze, Klaviyo, Mailchimp or Netcore.",
+    "evidence": [
+      {
+        "signal": "Headless browser built for AI agents to navigate sites and logins, making automated link and landing-page checks feasible",
+        "url": "https://github.com/cutetailbud/ff-ruyijs"
+      },
+      {
+        "signal": "HN: vibe-coding quality worries show the general demand for AI-driven verification",
+        "url": "https://news.ycombinator.com/item?id=50444380"
+      },
+      {
+        "signal": "Agents that see screens cheaply (frame diff to image) make visual QA of rendered emails affordable",
+        "url": "https://github.com/SAOS-3624/dsh-see-now"
+      },
+      {
+        "signal": "Builder's own domain: enterprise retail email/CRM operations",
+        "url": ""
+      }
+    ],
+    "solution": "The user pastes the campaign HTML or a test-send/preview URL plus the brief or offer details. The agent crawls every link (status codes, redirects, UTM conventions, expiry), checks landing price and offer parity against the brief, flags unfilled merge tags, alt text and missing unsubscribe/legal footers, and takes mobile/desktop screenshots. It outputs a pass/fail report with a Slack/Telegram notification.",
+    "mvp_features": [
+      "Paste HTML or ingest from a test-send inbox (IMAP)",
+      "Link crawler with UTM/redirect validation",
+      "LLM brief-vs-creative consistency check",
+      "Merge-tag and footer lint",
+      "Screenshot capture",
+      "Shareable PDF/link report and Slack/Telegram alert"
+    ],
+    "stack": "Python, Playwright, Claude API, FastAPI, React dashboard, Postgres, Docker VPS, Razorpay/Stripe",
+    "build_days": 12,
+    "monetization": {
+      "model": "subscription",
+      "price_inr": "Rs 2,999/mo (100 checks); agency Rs 9,999/mo",
+      "price_usd": "$39/mo, $129/mo agency"
+    },
+    "where_to_sell": [
+      "LinkedIn outreach to CRM managers",
+      "Email marketing communities and Slack groups",
+      "Indian digital agencies",
+      "Product Hunt/AppSumo"
+    ],
+    "competition": "Litmus, Email on Acid and Validity do rendering and spam checks but not brief-vs-content logic or link/offer validation, and they are expensive. The gap is semantic QA at a low price.",
+    "first_10_customers": "Offer a free audit of a real recent campaign to 30 CRM/email managers on your LinkedIn network and ex-colleagues, then convert the best 10 to paid. Position agencies as a way to cut errors.",
+    "risks": "Enterprise buyers have long procurement cycles and security reviews. Start with agencies and mid-market. ESP-specific integration is effortful.",
+    "scores": {
+      "demand": 6,
+      "gap": 6,
+      "build_ease": 6,
+      "fit": 9,
+      "revenue": 7
+    },
+    "total": 34,
+    "id": 4,
+    "date": "2026-11-16",
+    "status": "new",
+    "doc_url": "https://docs.google.com/open?id=1IgACnCmq-PiFtc-sy03Iehl3YWrfhDgchp1EBQFdrqw",
+    "doc_id": "1IgACnCmq-PiFtc-sy03Iehl3YWrfhDgchp1EBQFdrqw"
+  },
+  {
+    "name": "PrivateTeam AI Setup",
+    "one_liner": "A done-for-you setup of a self-hosted AI team workspace (chat channels, Claude/GPT agents, memory, approvals) on the client's own VPS for Indian agencies and SMBs.",
+    "category": "done-for-you service",
+    "problem": "My team pastes client data into ChatGPT and Notion AI and I'm worried about leaks. I want one private place where staff and AI agents work together, but I can't set up Docker and Postgres myself.",
+    "target_buyer": "Digital marketing agencies, small software firms and consultancies (5-50 staff) in India that care about client confidentiality and want AI help in daily ops.",
+    "evidence": [
+      {
+        "signal": "Open-source self-hosted Slack alternative with agents, memory, approvals, Docker Compose + Postgres",
+        "url": "https://github.com/agentes-chat/agentes-chat"
+      },
+      {
+        "signal": "Local-first multi-model bot platform with memory and background work",
+        "url": "https://github.com/modelflare-ai/AnyModelBot"
+      },
+      {
+        "signal": "Notion AI chat sessions exposed via vendor hack, which raises privacy concerns",
+        "url": "https://news.ycombinator.com/item?id=50436636"
+      },
+      {
+        "signal": "Dependence on a single provider hurts when Claude is down",
+        "url": "https://news.ycombinator.com/item?id=50481347"
+      }
+    ],
+    "solution": "You deploy and harden the open-source stack on the client's VPS with SSL, backups, SSO, and multi-model routing (Claude + fallback model). You add pre-built agents for the agency: campaign brief writer, report summariser, client-update drafter and a Telegram bridge. Monthly retainer covers upgrades, monitoring and new agents.",
+    "mvp_features": [
+      "Docker Compose one-command deploy with SSL and backups",
+      "Multi-model key routing with fallback",
+      "3-5 prebuilt agency agents/prompts",
+      "Telegram/WhatsApp notification bridge",
+      "Usage/cost dashboard",
+      "Admin onboarding doc and 1-hour training"
+    ],
+    "stack": "Docker Compose, Postgres, agentes-chat or similar OSS, Caddy/Nginx, Claude/OpenAI APIs, GitHub Actions for backups",
+    "build_days": 6,
+    "monetization": {
+      "model": "setup fee + retainer",
+      "price_inr": "Rs 25,000 setup + Rs 5,000/mo retainer",
+      "price_usd": "$350 setup + $60/mo"
+    },
+    "where_to_sell": [
+      "Existing agency clients",
+      "LinkedIn outreach in Hyderabad/Bangalore",
+      "Local business groups",
+      "Upwork"
+    ],
+    "competition": "Freelancers sell generic chatbots, and Slack/Notion bundle AI at per-seat prices. The gap is a private, flat-cost workspace installed for them with ongoing support.",
+    "first_10_customers": "Sell to 3-4 existing agency clients first, then DM 50 founders of 10-50 person agencies with a free security audit offer. Use a case study from your own agency.",
+    "risks": "Low-leverage services revenue, and the OSS project is young and may change or have bugs. Mitigate by productising the install script.",
+    "scores": {
+      "demand": 6,
+      "gap": 5,
+      "build_ease": 7,
+      "fit": 8,
+      "revenue": 7
+    },
+    "total": 33,
+    "id": 5,
+    "date": "2026-11-16",
+    "status": "new",
+    "doc_url": "https://docs.google.com/open?id=1-EOYJEAQz2xfrdb0nHrpD3G9QqfrRouthoE9XtY3RsU",
+    "doc_id": "1-EOYJEAQz2xfrdb0nHrpD3G9QqfrRouthoE9XtY3RsU"
+  }
+]
