@@ -1,0 +1,55 @@
+# AI Opportunity Scout 🤖💰
+
+A Telegram bot that finds **AI agents / AI products you can build and sell**, based on real market demand.
+
+**How it works**
+1. **Scans demand signals** from the last 7 days:
+   - Hacker News (Show HN / Ask HN on AI agents, automation, LLM tools)
+   - Reddit (r/SaaS, r/Entrepreneur, r/smallbusiness, r/AI_Agents…). It keeps posts with pain or buying intent, like "I wish there was…", "would pay", "spend hours", "alternative to".
+   - GitHub (new AI-agent repos that are gaining stars quickly)
+2. **Claude analyses the signals** against your builder profile and returns 5 scored ideas. Each idea has the problem, the buyer, evidence links, MVP features, stack, build days, INR/USD pricing, where to sell, competition, a plan for the first 10 customers, and risks.
+3. **Posts a digest to Telegram.** The top idea is labelled "Build this week", which fits the one-AI-project-a-week plan.
+4. **Keeps a history** in `data/ideas.json` and `data/ideas.csv` so ideas are never repeated. You can track each one: new → shortlisted → building → launched/killed.
+
+## Setup (5 min)
+1. Create a bot with @BotFather. Copy the token and add the bot to your channel as an admin.
+2. Get an Anthropic API key: console.anthropic.com
+3. `cp .env.example .env` and fill it in.
+
+```bash
+pip install -r requirements.txt
+python run_scout.py                          # weekly digest
+python run_scout.py --niche "gyms in India"  # niche-specific ideas
+python run_scout.py --plan 1                 # full build-and-sell plan for idea #1
+python run_scout.py --offline                # skip scan, Claude-only
+```
+
+## Option A: GitHub Actions (free, runs while your PC is off)
+1. Push this folder to a new repo, e.g. `BuiltByGanesh/ai-opportunity-scout`.
+2. Settings → Secrets → Actions: add `ANTHROPIC_API_KEY`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`.
+3. It runs every **Monday 08:17 IST**. Actions → *Run workflow* lets you run it on demand with a niche or a plan ID.
+
+## Option B: Interactive bot on your VPS (Hostinger Docker)
+```bash
+docker compose up -d --build
+```
+Commands in Telegram:
+| Command | What it does |
+|---|---|
+| `/scout` | Fresh market scan + top ideas |
+| `/niche CA firms in India` | Ideas for one market |
+| `/plan 3` | Day-by-day build plan, architecture, pricing tiers, launch checklist, kill metric |
+| `/list` | Last 10 ideas |
+| `/status 3 building` | Track progress |
+
+Set `TELEGRAM_ALLOWED_USERS` to your Telegram user ID so only you can run commands, since each one costs API credits.
+
+You can use A and B together. Note that they keep separate idea histories (repo vs VPS `data/`).
+
+## Customise
+- `BUILDER_PROFILE` (env or `oppbot/config.py`): your skills and target markets. This drives the "fit" score.
+- `SUBREDDITS`, `IDEAS_PER_RUN`, `LOOKBACK_DAYS`, `CLAUDE_MODEL`.
+- To add sources (Product Hunt, IndieHackers, X), add a function to `oppbot/sources.py` and include it in `collect_all()`.
+
+## Cost
+About 1 Claude call per digest and 1 per `/plan`. That works out to roughly a few rupees per run on Sonnet.

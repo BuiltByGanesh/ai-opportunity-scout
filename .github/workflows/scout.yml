@@ -1,0 +1,50 @@
+name: AI Opportunity Scout
+
+on:
+  schedule:
+    - cron: "47 2 * * 1"   # Monday 08:17 IST — weekly digest ("build this week")
+  workflow_dispatch:
+    inputs:
+      niche:
+        description: "Optional niche (e.g. 'CA firms in India')"
+        required: false
+      plan_id:
+        description: "Optional: idea ID to get a full build plan"
+        required: false
+
+permissions:
+  contents: write
+
+jobs:
+  scout:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - name: Run
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          IN_PLAN: ${{ github.event.inputs.plan_id }}
+          IN_NICHE: ${{ github.event.inputs.niche }}
+        run: |
+          if [ -n "$IN_PLAN" ]; then
+            python run_scout.py --plan "$IN_PLAN"
+          elif [ -n "$IN_NICHE" ]; then
+            python run_scout.py --niche "$IN_NICHE"
+          else
+            python run_scout.py
+          fi
+          python run_scout.py --export
+      - name: Save idea history
+        run: |
+          git config user.name "scout-bot"
+          git config user.email "scout-bot@users.noreply.github.com"
+          git add data/
+          git diff --cached --quiet || git commit -m "scout: ideas $(date +%F)"
+          git push

@@ -1,0 +1,125 @@
+"""Claude turns raw market signals into scored, sellable product ideas and build plans."""
+import json
+import re
+
+from . import config
+
+IDEA_SCHEMA = """{
+  "ideas": [
+    {
+      "name": "short product name",
+      "one_liner": "what it does in one sentence",
+      "category": "AI agent | SaaS | Telegram/WhatsApp bot | Chrome extension | template/kit | done-for-you service",
+      "problem": "the pain, in the buyer's words",
+      "target_buyer": "who pays (be specific: role + business type + region)",
+      "evidence": [{"signal": "short summary", "url": "source url from the signals"}],
+      "solution": "how the product solves it, incl. where the AI/agent does the work",
+      "mvp_features": ["3-6 features for v1"],
+      "stack": "concrete stack",
+      "build_days": 0,
+      "monetization": {"model": "subscription | one-time | per-use | setup fee + retainer", "price_inr": "e.g. Rs 999/mo", "price_usd": "e.g. $19/mo"},
+      "where_to_sell": ["channels: Gumroad, AppSumo, Chrome Web Store, LinkedIn outreach, local agencies, etc."],
+      "competition": "who exists and the gap you exploit",
+      "first_10_customers": "concrete plan to get the first 10 paying users",
+      "risks": "biggest risk",
+      "scores": {"demand": 0, "gap": 0, "build_ease": 0, "fit": 0, "revenue": 0},
+      "total": 0
+    }
+  ]
+}"""
+
+SYSTEM = (
+    "You are a sharp product strategist and indie-hacker coach. You find AI products a solo builder can ship fast "
+    "and actually sell. You are evidence-driven: every idea must be grounded in the provided market signals, and you "
+    "cite their URLs. Prefer boring, specific, painful B2B problems over hype. No generic 'AI chatbot for X' ideas "
+    "unless the signal shows clear willingness to pay. Scores are 1-10; total = sum. Respond with JSON only."
+)
+
+
+def _client():
+    import anthropic
+    if not config.ANTHROPIC_API_KEY:
+        raise RuntimeError("ANTHROPIC_API_KEY is not set")
+    return anthropic.Anthropic(api_key=config.ANTHROPIC_API_KEY)
+
+
+def _ask(prompt: str, max_tokens: int = 8000) -> str:
+    msg = _client().messages.create(
+        model=config.CLAUDE_MODEL,
+        max_tokens=max_tokens,
+        system=SYSTEM,
+        messages=[{"role": "user", "content": prompt}],
+    )
+    return "".join(b.text for b in msg.content if getattr(b, "type", "") == "text")
+
+
+def _parse_json(text: str) -> dict:
+    text = text.strip()
+    m = re.search(r"```(?:json)?\s*(\{.*\})\s*```", text, re.S)
+    if m:
+        text = m.group(1)
+    else:
+        start, end = text.find("{"), text.rfind("}")
+        text = text[start:end + 1]
+    return json.loads(text)
+
+
+def _fmt_signals(signals: list[dict]) -> str:
+    lines = []
+    for s in signals:
+        t = s["text"].replace("\n", " ")[:220]
+        lines.append(f"- [{s['source']}] ({s['score']}) {s['title']} | {s['url']}" + (f" | {t}" if t else ""))
+    return "\n".join(lines)
+
+
+def generate_ideas(signals: list[dict], n: int = config.IDEAS_PER_RUN, avoid: list[str] | None = None,
+                   niche: str | None = None) -> list[dict]:
+    avoid_txt = ", ".join(avoid or []) or "none"
+    niche_txt = f"Focus only on this niche: {niche}.\n" if niche else ""
+    prompt = f"""BUILDER PROFILE:
+{config.BUILDER_PROFILE}
+
+{niche_txt}MARKET SIGNALS (last {config.LOOKBACK_DAYS} days, source + traction score):
+{_fmt_signals(signals) if signals else "(no live signals - use your own knowledge of current demand, and say evidence is 'knowledge-based' with url '')"}
+
+TASK:
+Find the {n} best AI agent / AI product opportunities this builder could build and SELL.
+- Cluster related signals; one idea can cite several.
+- Mix: at least one that sells to Indian SMBs/agencies, at least one with global SaaS potential, at least one buildable in under 7 days.
+- Don't repeat these previously suggested ideas: {avoid_txt}
+- Sort by total score, best first.
+
+Return JSON exactly in this shape:
+{IDEA_SCHEMA}"""
+    data = _parse_json(_ask(prompt))
+    ideas = data.get("ideas", [])
+    for i in ideas:
+        sc = i.get("scores", {})
+        i["total"] = sum(int(v) for v in sc.values() if str(v).isdigit())
+    return sorted(ideas, key=lambda x: x.get("total", 0), reverse=True)
+
+
+def build_plan(idea: dict) -> str:
+    """Day-by-day build + launch plan for one idea, as plain text (Telegram-friendly)."""
+    prompt = f"""BUILDER PROFILE:
+{config.BUILDER_PROFILE}
+
+IDEA:
+{json.dumps(idea, ensure_ascii=False, indent=2)}
+
+Write a practical build-and-sell plan for this idea. Plain text, no markdown tables, under 3500 characters:
+1. Architecture (components, APIs, data flow) in 5-8 lines
+2. Day-by-day build plan for the MVP (evenings, solo)
+3. Folder structure
+4. The core agent/LLM prompt or logic to implement first
+5. Pricing tiers (INR + USD)
+6. Launch checklist: landing page, demo video, where to post, outreach message template (2-3 lines)
+7. Metric that tells you in 2 weeks whether to continue or kill it
+Respond with the plan text only (not JSON)."""
+    import anthropic  # noqa: F401  (ensures dependency present)
+    msg = _client().messages.create(
+        model=config.CLAUDE_MODEL, max_tokens=3000,
+        system="You are a pragmatic senior engineer and indie-hacker coach. Be concrete and terse.",
+        messages=[{"role": "user", "content": prompt}],
+    )
+    return "".join(b.text for b in msg.content if getattr(b, "type", "") == "text").strip()
