@@ -44,3 +44,8 @@ SUBREDDITS = os.getenv(
 ).split(",")
 LOOKBACK_DAYS = int(os.getenv("LOOKBACK_DAYS", "7"))
 IDEAS_PER_RUN = int(os.getenv("IDEAS_PER_RUN", "5"))
+
+# Google Drive export via Apps Script web app (see gdrive/Code.gs)
+GDRIVE_WEBHOOK_URL = os.getenv("GDRIVE_WEBHOOK_URL", "")
+GDRIVE_WEBHOOK_SECRET = os.getenv("GDRIVE_WEBHOOK_SECRET", "")
+GDRIVE_FOLDER_ID = os.getenv("GDRIVE_FOLDER_ID", "1WKKK2997P1i-mD9DmRHajuBJVt9Q8A4b")

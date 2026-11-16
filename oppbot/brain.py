@@ -88,19 +88,26 @@ IDEAS_TOOL = {
 
 
 def _ask_ideas(prompt: str) -> dict:
-    """Forced tool call -> always valid JSON. Falls back to text parsing if needed."""
-    msg = _client().messages.create(
-        model=config.CLAUDE_MODEL,
-        max_tokens=16000,
-        system=SYSTEM,
-        tools=[IDEAS_TOOL],
-        tool_choice={"type": "tool", "name": "submit_ideas"},
-        messages=[{"role": "user", "content": prompt}],
-    )
+    """Prefer a forced tool call (valid JSON). Some models reject forced tool_choice -> fall back to
+    'auto', then plain-text JSON with one self-repair retry."""
+    import anthropic
+    base = dict(model=config.CLAUDE_MODEL, max_tokens=16000, system=SYSTEM, tools=[IDEAS_TOOL],
+                messages=[{"role": "user", "content": prompt + "\n\nCall the submit_ideas tool with the result."}])
+    try:
+        msg = _client().messages.create(**base, tool_choice={"type": "tool", "name": "submit_ideas"})
+    except anthropic.BadRequestError as e:
+        if "tool_choice" not in str(e):
+            raise
+        msg = _client().messages.create(**base)
     for b in msg.content:
-        if getattr(b, "type", "") == "tool_use":
+        if getattr(b, "type", "") == "tool_use" and isinstance(b.input, dict) and b.input.get("ideas"):
             return b.input
-    return _parse_json("".join(getattr(b, "text", "") for b in msg.content))
+    text = "".join(getattr(b, "text", "") for b in msg.content)
+    try:
+        return _parse_json(text)
+    except Exception:  # noqa: BLE001
+        fixed = _ask("Return ONLY valid JSON (no prose) for this content, fixing any syntax errors:\n\n" + text)
+        return _parse_json(fixed)
 
 
 def _parse_json(text: str) -> dict:

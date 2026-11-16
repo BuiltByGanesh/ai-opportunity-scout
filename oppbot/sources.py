@@ -114,7 +114,7 @@ def reddit(subs: list[str] = config.SUBREDDITS) -> list[dict]:
             time.sleep(1.2)
         except Exception as e:  # noqa: BLE001
             print(f"[warn] reddit r/{sub}: {e}")
-            if not token and "403" in str(e):
+            if not token and ("403" in str(e) or "429" in str(e)):
                 print("[info] Reddit blocks this IP; set REDDIT_CLIENT_ID/SECRET to enable. Skipping Reddit.")
                 break
     return out

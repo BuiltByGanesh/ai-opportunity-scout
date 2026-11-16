@@ -32,6 +32,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REDDIT_CLIENT_ID: ${{ secrets.REDDIT_CLIENT_ID }}
           REDDIT_CLIENT_SECRET: ${{ secrets.REDDIT_CLIENT_SECRET }}
+          GDRIVE_WEBHOOK_URL: ${{ secrets.GDRIVE_WEBHOOK_URL }}
+          GDRIVE_WEBHOOK_SECRET: ${{ secrets.GDRIVE_WEBHOOK_SECRET }}
           IN_PLAN: ${{ github.event.inputs.plan_id }}
           IN_NICHE: ${{ github.event.inputs.niche }}
         run: |

@@ -25,6 +25,14 @@ def save_new(ideas: list[dict]) -> list[dict]:
     return ideas
 
 
+def update(idea_id: int, **fields) -> None:
+    history = load()
+    for i in history:
+        if i["id"] == idea_id:
+            i.update(fields)
+    config.IDEAS_FILE.write_text(json.dumps(history, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
 def get(idea_id: int) -> dict | None:
     return next((i for i in load() if i["id"] == idea_id), None)
 

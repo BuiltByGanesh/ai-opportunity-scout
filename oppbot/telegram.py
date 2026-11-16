@@ -46,6 +46,8 @@ def format_idea(i: dict, full: bool = True) -> str:
         f"<i>{e(i.get('category'))}</i>\n"
         f"{e(i.get('one_liner'))}\n"
     )
+    if i.get("doc_url"):
+        head += f"📄 <a href=\"{e(i['doc_url'])}\">Google Doc</a>\n"
     if not full:
         return head + f"💰 {e(m.get('price_inr'))} / {e(m.get('price_usd'))} · 🛠 ~{e(i.get('build_days'))} days\n"
     ev = "\n".join(

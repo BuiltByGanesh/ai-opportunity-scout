@@ -47,6 +47,14 @@ Set `TELEGRAM_ALLOWED_USERS` to your Telegram user ID so only you can run comman
 
 You can use A and B together. Note that they keep separate idea histories (repo vs VPS `data/`).
 
+## Google Drive: one doc per idea
+Each idea is saved as a formatted Google Doc in the Drive folder (`GDRIVE_FOLDER_ID`). `/plan` appends the build plan to the same doc.
+1. script.google.com → New project → paste `gdrive/Code.gs`.
+2. Project Settings → Script properties → `SECRET` = a long random string.
+3. Run `testSetup` once and allow the permissions.
+4. Deploy → New deployment → Web app → Execute as **Me**, access **Anyone** → copy the `/exec` URL.
+5. Add the GitHub secrets `GDRIVE_WEBHOOK_URL` (the URL) and `GDRIVE_WEBHOOK_SECRET` (the same string).
+
 ## Customise
 - `BUILDER_PROFILE` (env or `oppbot/config.py`): your skills and target markets. This drives the "fit" score.
 - `SUBREDDITS`, `IDEAS_PER_RUN`, `LOOKBACK_DAYS`, `CLAUDE_MODEL`.
