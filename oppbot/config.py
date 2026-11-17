@@ -44,6 +44,7 @@ SUBREDDITS = os.getenv(
 ).split(",")
 LOOKBACK_DAYS = int(os.getenv("LOOKBACK_DAYS", "7"))
 IDEAS_PER_RUN = int(os.getenv("IDEAS_PER_RUN", "5"))
+MIN_UNIQUENESS = int(os.getenv("MIN_UNIQUENESS", "5"))   # web-verified uniqueness /10 needed to be sent
 
 # Google Drive export via Apps Script web app (see gdrive/Code.gs)
 GDRIVE_WEBHOOK_URL = os.getenv("GDRIVE_WEBHOOK_URL", "")

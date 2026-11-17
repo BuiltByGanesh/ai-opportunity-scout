@@ -211,9 +211,32 @@ Submit them with the submit_ideas tool. Field guide:
         i["total"] = sum(int(v) for v in sc.values() if str(v).isdigit())
         i.setdefault("evidence", []); i.setdefault("mvp_features", []); i.setdefault("where_to_sell", [])
     ideas = verify_uniqueness(ideas)
-    # crowded ideas go last; then keep the best n
-    ideas.sort(key=lambda x: (x.get("uniqueness_verdict") != "crowded", x.get("total", 0)), reverse=True)
-    return ideas[:n]
+    return ideas
+
+
+def _keep_unique(ideas: list[dict]) -> tuple[list[dict], list[str]]:
+    keep = [i for i in ideas if i.get("uniqueness_verdict") != "crowded"
+            and i.get("scores", {}).get("uniqueness", 10) >= config.MIN_UNIQUENESS]
+    dropped = [i["name"] for i in ideas if i not in keep]
+    return keep, dropped
+
+
+def generate_unique_ideas(signals: list[dict], n: int = config.IDEAS_PER_RUN, avoid: list[str] | None = None,
+                          niche: str | None = None, rounds: int = 2) -> list[dict]:
+    """Brainstorm -> develop -> web-verify. Ideas that already exist are dropped; if too few survive,
+    run another round that avoids them. Never pads the digest with copycat ideas."""
+    avoid = list(avoid or [])
+    found: list[dict] = []
+    for r in range(rounds):
+        batch = generate_ideas(signals, n=n, avoid=avoid + [i["name"] for i in found], niche=niche)
+        keep, dropped = _keep_unique(batch)
+        print(f"[info] round {r + 1}: kept {[i['name'] for i in keep]}, dropped as existing {dropped}")
+        found += keep
+        avoid += [f"{d} (already exists)" for d in dropped]
+        if len(found) >= max(3, n - 1):
+            break
+    found.sort(key=lambda x: x.get("total", 0), reverse=True)
+    return found[:n]
 
 
 def verify_uniqueness(ideas: list[dict]) -> list[dict]:

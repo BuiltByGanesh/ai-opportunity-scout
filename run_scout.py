@@ -15,7 +15,7 @@ from oppbot import brain, gdrive, sources, store, telegram
 
 def scout(niche: str | None = None, offline: bool = False, chat_id=None) -> list[dict]:
     signals = [] if offline else sources.collect_all()
-    ideas = brain.generate_ideas(signals, avoid=store.recent_names(), niche=niche)
+    ideas = brain.generate_unique_ideas(signals, avoid=store.recent_names(), niche=niche)
     ideas = store.save_new(ideas)
     for i in ideas:                                   # one Google Doc per idea in the Drive folder
         res = gdrive.save_idea(i)
