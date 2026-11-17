@@ -23,9 +23,11 @@ def idea_sections(i: dict) -> list[dict]:
     m, sc = i.get("monetization", {}), i.get("scores", {})
     return [
         {"heading": "Summary", "text": f"{i.get('one_liner','')}\nCategory: {i.get('category','')}\n"
-                                        f"Score: {i.get('total',0)}/50  (demand {sc.get('demand')}, gap {sc.get('gap')}, "
-                                        f"build ease {sc.get('build_ease')}, fit {sc.get('fit')}, revenue {sc.get('revenue')})\n"
+                                        f"Score: {i.get('total',0)}/60  (demand {sc.get('demand')}, gap {sc.get('gap')}, "
+                                        f"build ease {sc.get('build_ease')}, fit {sc.get('fit')}, revenue {sc.get('revenue')}, novelty {sc.get('novelty')})\n"
                                         f"Status: {i.get('status','new')}   ·   Found: {i.get('date','')}"},
+        {"heading": "Creative angle", "text": i.get("creative_angle", "")},
+        {"heading": "Wow moment", "text": i.get("wow_moment", "")},
         {"heading": "Problem", "text": i.get("problem", "")},
         {"heading": "Target buyer", "text": i.get("target_buyer", "")},
         {"heading": "Market evidence", "links": [{"text": e.get("signal", ""), "url": e.get("url", "")}

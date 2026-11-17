@@ -42,7 +42,7 @@ def format_idea(i: dict, full: bool = True) -> str:
     sc = i.get("scores", {})
     m = i.get("monetization", {})
     head = (
-        f"<b>#{i.get('id','?')} · {e(i.get('name'))}</b>  ⭐ {i.get('total', 0)}/50\n"
+        f"<b>#{i.get('id','?')} · {e(i.get('name'))}</b>  ⭐ {i.get('total', 0)}/60\n"
         f"<i>{e(i.get('category'))}</i>\n"
         f"{e(i.get('one_liner'))}\n"
     )
@@ -57,6 +57,8 @@ def format_idea(i: dict, full: bool = True) -> str:
     feats = "\n".join(f"  • {e(f)}" for f in i.get("mvp_features", []))
     return (
         head
+        + (f"\n✨ <b>Angle:</b> {e(i.get('creative_angle'))}\n" if i.get("creative_angle") else "")
+        + (f"🎬 <b>Wow moment:</b> {e(i.get('wow_moment'))}\n" if i.get("wow_moment") else "")
         + f"\n<b>Problem:</b> {e(i.get('problem'))}\n"
         f"<b>Buyer:</b> {e(i.get('target_buyer'))}\n"
         f"<b>Evidence:</b>\n{ev}\n"
@@ -69,7 +71,7 @@ def format_idea(i: dict, full: bool = True) -> str:
         f"<b>First 10 customers:</b> {e(i.get('first_10_customers'))}\n"
         f"<b>Risk:</b> {e(i.get('risks'))}\n"
         f"📊 demand {sc.get('demand')} · gap {sc.get('gap')} · ease {sc.get('build_ease')} · "
-        f"fit {sc.get('fit')} · revenue {sc.get('revenue')}\n"
+        f"fit {sc.get('fit')} · revenue {sc.get('revenue')} · novelty {sc.get('novelty')}\n"
     )
 
 
