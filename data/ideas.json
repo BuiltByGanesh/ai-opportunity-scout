@@ -621,5 +621,396 @@
     "status": "new",
     "doc_url": "https://docs.google.com/open?id=1H48DOtzP-DUosQsMKUCOe7_lYCZ6hwMyRNBSo5GLDDg",
     "doc_id": "1H48DOtzP-DUosQsMKUCOe7_lYCZ6hwMyRNBSo5GLDDg"
+  },
+  {
+    "name": "Dawn Patrol",
+    "one_liner": "A background agent that watches your live email campaign sends in the ESP dashboard overnight and Telegrams you a one-tap 'pause' card only when metrics look wrong.",
+    "category": "AI agent",
+    "problem": "I schedule a 2M-send campaign at night and pray. By the time someone notices a broken link, wrong segment count or bounce spike, 400k emails are out. ESP alerts are missing or need enterprise tiers.",
+    "target_buyer": "Email/CRM campaign managers and lifecycle agencies running enterprise retail sends in India, SEA and the US/UK (agency owners, heads of CRM).",
+    "evidence": [
+      {
+        "signal": "agent-autoloop: CLI agents work in the background and only send a decision card when unsure — the exact 'only ping me when it matters' pattern",
+        "url": "https://github.com/KKKKhazix/agent-autoloop"
+      },
+      {
+        "signal": "Headless browser purpose-built for agents to navigate logins and protected sites — lets the agent drive ESP dashboards with no API",
+        "url": "https://github.com/cutetailbud/ff-ruyijs"
+      },
+      {
+        "signal": "Pomerado: turn any website into deterministic agent tools — confirms demand for dashboard-without-API automation",
+        "url": "https://news.ycombinator.com/item?id=50455811"
+      }
+    ],
+    "solution": "Playwright logs into the ESP (Salesforce MC, Braze, Klaviyo, Netcore, MoEngage) with a read-only user, snapshots send progress, bounce, complaint, unsub, and segment size at intervals. It compares against the last comparable send (stored baseline) and flags anomalies; Claude writes a 2-line diagnosis ('unsub rate 6x last Tuesday, likely wrong creative variant'). A Telegram card has Pause / Ignore / Call-me buttons; Pause triggers a browser action on the ESP.",
+    "mvp_features": [
+      "Read-only dashboard scraper for 2 ESPs (Klaviyo + one enterprise-style via custom recipe)",
+      "Baseline store of last 10 sends per campaign type",
+      "Anomaly rules for bounce, complaint, unsub, segment-drift, send-rate stall",
+      "Telegram card with one-tap pause (browser action)",
+      "Morning 'overnight report' digest",
+      "Recipe file format so agencies add a new ESP in 30 mins"
+    ],
+    "stack": "Python, Playwright, SQLite/Postgres, python-telegram-bot, Claude API, Docker on Hostinger VPS, GitHub Actions for scheduled runs",
+    "build_days": 10,
+    "monetization": {
+      "model": "subscription",
+      "price_inr": "Rs 4,999/mo per workspace (+ Rs 15,000 setup per ESP recipe)",
+      "price_usd": "$79/mo per workspace"
+    },
+    "where_to_sell": [
+      "LinkedIn outreach to CRM leads",
+      "Email-marketing Slack/Discord communities",
+      "Local digital agencies in Hyderabad/Bangalore",
+      "Reddit r/emailmarketing"
+    ],
+    "competition": "ESP-native alerts (limited), Litmus/Validity monitoring (deliverability focused, not live campaign sanity). Gap: cross-ESP, no-API, human-in-loop pause card built by someone who has lived the 2am send.",
+    "first_10_customers": "Offer a free 'overnight watch' for one big send to 20 agencies/ex-colleagues in enterprise retail CRM; convert with a story of the first anomaly caught; price at agency retainer scale.",
+    "risks": "ESP ToS / credential security and brittle UI scrapers; mitigate with read-only users, self-hosted option and recipes.",
+    "creative_angle": "Domain-insider lens: an ex-CRM ops person's night terror turned into an agent; agent-autoloop's 'only ask when unsure' pattern applied to marketing.",
+    "wow_moment": "Phone buzzes at 2:07am: 'Unsub rate 9x baseline on Send #3 — subject line variant B has wrong offer.' Tap Pause; the live dashboard flips to Paused on screen recording.",
+    "scores": {
+      "demand": 7,
+      "gap": 8,
+      "build_ease": 6,
+      "fit": 10,
+      "revenue": 8,
+      "novelty": 8,
+      "uniqueness": 6
+    },
+    "total": 53,
+    "uniqueness_verdict": "differentiated",
+    "closest_competitors": [
+      {
+        "name": "Klaviyo auto-monitors / anomaly detection",
+        "url": "https://help.klaviyo.com/hc/en-us/articles/31141239059611"
+      },
+      {
+        "name": "Coldops (deliverability alerts for cold-email agencies)",
+        "url": "https://coldops.io/deliverability-monitoring"
+      },
+      {
+        "name": "MailTester (alerts and auto-pause via Mailchimp/HubSpot/Klaviyo/SendGrid)",
+        "url": "https://mailtester.com/blog/email-verification-service-alerts-delivery-drops/"
+      }
+    ],
+    "unique_twist": "Klaviyo and Braze only alert by email or in-app, and they have no one-tap pause from chat. Coldops and MailTester cover cold email or basic deliverability. Make it a cross-ESP watcher for enterprise retail sends (Braze, MoEngage, CleverTap, Netcore, Klaviyo). It would read the live send dashboard through a logged-in browser session, because many of these ESPs expose limited send-time APIs. It would catch send-time anomalies (unsubscribe spike, broken links or personalisation, a revenue-per-send crash, a wrong segment) against each campaign's own baseline. The Telegram or WhatsApp card would carry the evidence and a pause button that actually calls the ESP. Sell it to agencies as a per-client overnight guard with an audit log. Do not pitch it as generic bounce monitoring.",
+    "id": 11,
+    "date": "2026-11-17",
+    "status": "new",
+    "doc_url": "https://docs.google.com/open?id=1pSvOpy3cfSRpESt2FsfrLrf7vpmdE19jpMML_ro8qzo",
+    "doc_id": "1pSvOpy3cfSRpESt2FsfrLrf7vpmdE19jpMML_ro8qzo"
+  },
+  {
+    "name": "Loss Bhai",
+    "one_liner": "Upload a broker P&L screenshot and get a savage Hinglish roast card with a Regret Index and your Most Expensive Habit, built for sharing in trader WhatsApp groups.",
+    "category": "Telegram/WhatsApp bot",
+    "problem": "Traders love sharing and laughing at losses but have no fun, shareable way to see what their habits actually cost them.",
+    "target_buyer": "Indian retail traders (consumer, 20-40), with upsell to TiltCourt-style deep dive; also trading influencers for audience engagement.",
+    "evidence": [
+      {
+        "signal": "dsh-see-now: cheap screen/vision understanding that makes screenshot analysis token-efficient",
+        "url": "https://github.com/SAOS-3624/dsh-see-now"
+      },
+      {
+        "signal": "Yogurt/local AI utilities show appetite for private, personal-data AI tools (P&L never leaves your control)",
+        "url": "https://github.com/FrigadeHQ/yogurt"
+      }
+    ],
+    "solution": "Telegram bot accepts P&L/positions screenshots from Zerodha, Groww, Upstox, Dhan. Claude vision extracts trades, computes Regret Index (what holding rule X would have saved), identifies the Most Expensive Habit, and generates a roast in Hinglish as a 9:16 share card with a watermark and referral deep link. Free roast; Rs 99 for the 'full autopsy' and upsell to subscription.",
+    "mvp_features": [
+      "Screenshot OCR/vision parsing for 4 brokers",
+      "Regret Index and Most Expensive Habit computation",
+      "Roast tone selector (mild, desi uncle, savage)",
+      "Share card image generator with watermark and referral link",
+      "Rs 99 UPI-paid full autopsy PDF",
+      "Anonymised leaderboard of Regret Index by weekday"
+    ],
+    "stack": "Python, python-telegram-bot, Claude vision, Pillow/HTML-to-image (Playwright), Razorpay/UPI, Hostinger VPS",
+    "build_days": 5,
+    "monetization": {
+      "model": "per-use",
+      "price_inr": "Free roast, Rs 99 autopsy, Rs 299 group roast",
+      "price_usd": "$1.5 per autopsy"
+    },
+    "where_to_sell": [
+      "Trader WhatsApp/Telegram groups",
+      "X/Instagram reels roast videos",
+      "Finfluencer collaborations",
+      "r/IndianStreetBets"
+    ],
+    "competition": "Generic trade journals; no one doing viral roast format. Gap: humor + virality in a niche with emotional pain.",
+    "first_10_customers": "Post 5 roast cards of volunteer (or own) P&Ls, DM 50 finfluencers offering a 'roast my followers' link, track referrals.",
+    "risks": "Virality is not guaranteed and monetization per-use is small; possible privacy/offense concerns; broker UI changes.",
+    "creative_angle": "Virality lens: turns shame into a share loop that funnels to the paid TiltCourt behavioral product.",
+    "wow_moment": "Drop a screenshot, 8 seconds later a card: 'Regret Index 87/100. Most Expensive Habit: Buying OTM calls at 3:10pm hoping for a miracle. Cost: ₹1.2L.'",
+    "scores": {
+      "demand": 7,
+      "gap": 7,
+      "build_ease": 9,
+      "fit": 8,
+      "revenue": 5,
+      "novelty": 8,
+      "uniqueness": 6
+    },
+    "total": 50,
+    "uniqueness_verdict": "differentiated",
+    "closest_competitors": [
+      {
+        "name": "RoastMyPortfolio (AI roast from a broker screenshot)",
+        "url": "https://roastmyportfolio.com/"
+      },
+      {
+        "name": "TradeLossMD (Tilt Score, FOMO Tax and 'Donation to Broker' from an Indian F&O tradebook)",
+        "url": "https://tradelossmd.com/"
+      },
+      {
+        "name": "Portfolio Roaster (open-source Codex skill)",
+        "url": "https://github.com/rzamora11/portfolio-roaster"
+      }
+    ],
+    "unique_twist": "Screenshot roasting exists (RoastMyPortfolio is global and holdings-based). TradeLossMD already offers shareable-style loss metrics for Indian F&O. I found no Hinglish, F&O-specific, share-first roast card. Own the meme format. Read intraday F&O P&L screenshots (Zerodha, Dhan, Groww) and produce a Hinglish roast card sized for a WhatsApp status, with a Regret Index and Most Expensive Habit. Add a group leaderboard where friends roast each other and a weekly 'Loss Bhai of the group' card. Treat it as a viral acquisition funnel, not an analytics tool, and avoid anything that looks like advice (SEBI risk).",
+    "id": 12,
+    "date": "2026-11-17",
+    "status": "new",
+    "doc_url": "https://docs.google.com/open?id=1GjPXoa71TVLwBp6LAPZL6dPN9aQY3ZHsvO8mygitWJ0",
+    "doc_id": "1GjPXoa71TVLwBp6LAPZL6dPN9aQY3ZHsvO8mygitWJ0"
+  },
+  {
+    "name": "OI Terrain",
+    "one_liner": "A Telegram bot that sends a 15-second rotating 3D terrain video of NSE option-chain open interest and IV surface at 9:30, 12:00 and 2:30.",
+    "category": "Telegram/WhatsApp bot",
+    "problem": "Option chain tables are walls of numbers; I can't see where the walls of OI and IV skew are at a glance.",
+    "target_buyer": "Intraday and expiry-day option traders in India, trading Telegram channel admins who want branded content.",
+    "evidence": [
+      {
+        "signal": "Vork: headless 3D/VFX engine for agents — headless rendering to video is now a mainstream pattern",
+        "url": "https://github.com/voyager-so/vork"
+      },
+      {
+        "signal": "Blender-AI MCP addon: 3D scene generation via agents shows 3D automation appetite",
+        "url": "https://github.com/hitkeeen/blender-ai-mcp-addon"
+      },
+      {
+        "signal": "dsh-video-storyboard: compressing visuals for consumption shows value of visual summaries",
+        "url": "https://github.com/SAOS-3624/dsh-video-storyboard"
+      }
+    ],
+    "solution": "Cron on VPS pulls the NSE option chain, builds a Three.js heightfield (strike x expiry, height=OI, color=IV change), renders headless via Playwright/ffmpeg into a 15s MP4 with a caption by Claude ('Max pain drifting to 24,400; call wall 24,600 thickening'). Bot sends it to subscribers and channels; channel admins get white-label watermark.",
+    "mvp_features": [
+      "NSE option-chain fetch with fallback",
+      "Three.js terrain renderer to MP4",
+      "Claude 2-line commentary",
+      "Telegram delivery at 3 timestamps",
+      "Index selector (Nifty/BankNifty/FinNifty)",
+      "White-label channel mode"
+    ],
+    "stack": "Three.js, Playwright, ffmpeg, Python, python-telegram-bot, Claude API, Hostinger VPS",
+    "build_days": 7,
+    "monetization": {
+      "model": "subscription",
+      "price_inr": "Rs 299/mo; white-label Rs 1,999/mo",
+      "price_usd": "$5/mo"
+    },
+    "where_to_sell": [
+      "Trading Telegram channels",
+      "X/fintwit with sample clips",
+      "Instagram reels",
+      "Trading coach partnerships"
+    ],
+    "competition": "Sensibull, Opstra, Quantsapp show 2D charts. Gap: cinematic 3D clip format that's shareable.",
+    "first_10_customers": "Post daily clips on X/Instagram with a bot link, offer free for 2 weeks to 5 channel admins in exchange for watermark.",
+    "risks": "NSE data licensing and scraping reliability; novelty may not translate into trading utility.",
+    "creative_angle": "Visual/designer lens: turn a numeric table into a cinematic object traders post.",
+    "wow_moment": "A glowing mountain range of OI rotating, with a red ridge labelled 'Call wall 24,600', arrives on Telegram at 9:30 sharp.",
+    "scores": {
+      "demand": 6,
+      "gap": 7,
+      "build_ease": 7,
+      "fit": 9,
+      "revenue": 5,
+      "novelty": 8,
+      "uniqueness": 6
+    },
+    "total": 48,
+    "uniqueness_verdict": "differentiated",
+    "closest_competitors": [
+      {
+        "name": "OpenAlgo (3D Vol Surface, OI tracker and Telegram alerts, open source)",
+        "url": "https://github.com/marketcalls/openalgo"
+      },
+      {
+        "name": "GoCharting Options (rotatable 3D volatility surface)",
+        "url": "https://gocharting.com/features/options"
+      },
+      {
+        "name": "OI Charts (AI F&O desk with scheduled Telegram reads)",
+        "url": "https://oicharts.com/"
+      }
+    ],
+    "unique_twist": "3D vol surfaces, OI charts and Telegram OI feeds each exist separately, but I found no scheduled 3D terrain video for NSE. Sell it as white-label content for channel admins. Each admin gets their own watermark and branding, auto-posted to their channel at fixed times, with an expiry-day mode (OI walls as ridges, with one-line captions). Drop the IV surface from the retail pitch, because traders cannot read it. The video is the wedge. The value is in the channel admins' audience growth.",
+    "id": 13,
+    "date": "2026-11-17",
+    "status": "new",
+    "doc_url": "https://docs.google.com/open?id=1sD5sdQr6Y9cMkC5l4RCm0SVu-ibrfYABSkkfTrUb72I",
+    "doc_id": "1sD5sdQr6Y9cMkC5l4RCm0SVu-ibrfYABSkkfTrUb72I"
+  },
+  {
+    "name": "TiltCourt",
+    "one_liner": "After each F&O trade you close, an AI cross-examines you via Telegram voice note and builds a personal tilt profile from your own answers.",
+    "category": "Telegram/WhatsApp bot",
+    "problem": "I know I revenge-trade after two losses and overtrade on Thursday expiry, but journals are boring and I never fill them. Nothing holds me accountable at the moment it matters.",
+    "target_buyer": "Active retail F&O traders in India (25-45, trading Nifty/BankNifty options) and trading coaches/Telegram-community admins.",
+    "evidence": [
+      {
+        "signal": "Yogurt (private on-device meeting transcription/summarization) shows traction for voice-first private AI capture",
+        "url": "https://github.com/FrigadeHQ/yogurt"
+      },
+      {
+        "signal": "agent-autoloop: agent follows up in background and pings only at decision points — same pattern for a trade-close trigger",
+        "url": "https://github.com/KKKKhazix/agent-autoloop"
+      },
+      {
+        "signal": "Telegram+Claude bot turning forwarded content into structured records proves the Telegram-first pattern works",
+        "url": "https://github.com/BalthDreadgrid20608/events-rpocket-tracker"
+      }
+    ],
+    "solution": "User forwards a broker trade notification/screenshot or connects broker CSV daily. The bot detects a closed trade and sends a pointed question ('You averaged down twice at 9:41 — was that in the plan?'). User answers by voice note; Whisper transcribes, Claude tags the behavior (revenge, FOMO, hope-hold, plan-follow). Weekly the bot produces a Tilt Profile with costs in rupees per pattern and a pre-trade 'circuit breaker' nudge when the pattern is recurring.",
+    "mvp_features": [
+      "Trade ingestion via screenshot/CSV/Zerodha-Dhan contract-note upload",
+      "Voice-note Q&A with transcript",
+      "Behavior tagging with rupee cost per pattern",
+      "Weekly Tilt Profile card",
+      "Circuit breaker: 'You've lost 2 in a row — 10-min pause?' message",
+      "Coach mode: share anonymised profile with a mentor"
+    ],
+    "stack": "Python, python-telegram-bot, Whisper/Deepgram, Claude API with vision, Postgres, Docker on Hostinger VPS",
+    "build_days": 9,
+    "monetization": {
+      "model": "subscription",
+      "price_inr": "Rs 499/mo (Rs 3,999/yr); coach tier Rs 2,999/mo",
+      "price_usd": "$9/mo"
+    },
+    "where_to_sell": [
+      "Telegram trading communities",
+      "Trading YouTube/Twitter fintwit creators (affiliate)",
+      "r/IndianStreetBets",
+      "Trading coaches as white-label"
+    ],
+    "competition": "Tradezella, Tradervue, Edgewonk are spreadsheets/journals needing manual effort, US-centric. Gap: Indian F&O context, voice-first, proactive interrogation, data moat in the user's own words.",
+    "first_10_customers": "Share 3 anonymised tilt profiles on X/IndianStreetBets, offer 14-day free for 30 traders, partner with 3 coaches to resell to their cohorts.",
+    "risks": "SEBI advisory boundaries (must be behavioral coaching only, no tips) and retention if users stop trading or feel judged.",
+    "creative_angle": "Behavior-data lens: instead of a journal, an interrogator whose answers become an uncopyable personal dataset.",
+    "wow_moment": "Bot voice-notes you: 'That's your 4th Thursday-expiry loss after a green morning. Same pattern has cost you ₹61,400 this quarter.'",
+    "scores": {
+      "demand": 8,
+      "gap": 8,
+      "build_ease": 7,
+      "fit": 9,
+      "revenue": 7,
+      "novelty": 8,
+      "uniqueness": 3
+    },
+    "total": 50,
+    "uniqueness_verdict": "crowded",
+    "closest_competitors": [
+      {
+        "name": "OneTradeJournal (India F&O journal with voice input and tilt detection)",
+        "url": "https://onetradejournal.com/"
+      },
+      {
+        "name": "TradeLossMD (AI trading psychologist for Indian F&O)",
+        "url": "https://tradelossmd.com/"
+      },
+      {
+        "name": "WickLog (AI journal with psychology tracking for Indian traders)",
+        "url": "https://www.wicklog.in/"
+      }
+    ],
+    "unique_twist": "Tilt scoring, India F&O focus, voice input and a Telegram AI coach all exist already. The one gap I found is the cross-examination format. Drop the tilt-score and journal framing. Build an adversarial, Socratic post-trade interrogation that works on rationalisation. Use voice-note audio features such as hesitation and justification patterns, and compare what the trader says with what they did (size, timing, re-entry after the loss). Output a personal tilt profile made of the trader's own contradicted statements, and sell it to coaches as a per-student review queue.",
+    "id": 14,
+    "date": "2026-11-17",
+    "status": "new",
+    "doc_url": "https://docs.google.com/open?id=1wR7MSAwXbqe0WBXmM06KT7hxyfQw7fj_UlFSzZF8Rt8",
+    "doc_id": "1wR7MSAwXbqe0WBXmM06KT7hxyfQw7fj_UlFSzZF8Rt8"
+  },
+  {
+    "name": "UdhaarGhost",
+    "one_liner": "An on-device Android agent on the shopkeeper's own phone politely chases unpaid udhaar via escalating Hinglish/Telugu WhatsApp nudges with a UPI link and stops when the payment SMS lands.",
+    "category": "AI agent",
+    "problem": "Mere paas 40 customers ka udhaar hai, ₹2 lakh stuck. Asking face to face is awkward and I don't have time to message each person daily.",
+    "target_buyer": "Kirana, medical-store, hardware and garment shop owners in Tier-2/3 Indian cities; wholesalers and small distributors with credit ledgers.",
+    "evidence": [
+      {
+        "signal": "Mika: on-device Android agent that operates apps (WhatsApp, UPI) on the user's own phone",
+        "url": "https://github.com/wangzan101/Mika"
+      },
+      {
+        "signal": "DSH-Android: no-root APK that reads the screen, runs scheduled/conditional automations",
+        "url": "https://github.com/jackwener/DSH-Android"
+      },
+      {
+        "signal": "Pinky: lets AI use your phone with you in the loop — approval pattern for sensitive messages",
+        "url": "https://github.com/DIYgod/pinky"
+      }
+    ],
+    "solution": "Shopkeeper's ledger (photo of khata or Vyapar/Khatabook export) is imported. The agent on the phone sends WhatsApp reminders from the shop's own number, with tone escalating over days, includes a UPI deep link, optionally a voice note in the shopkeeper's voice. It watches incoming bank/UPI SMS notifications and stops the chase and updates ledger on match. Owner approves the first message per customer and can mark 'don't chase' for VIPs.",
+    "mvp_features": [
+      "Khata import via photo/CSV",
+      "Reminder tone ladder in Hinglish/Telugu/Hindi",
+      "UPI link generation per customer",
+      "Payment SMS matching to stop reminders",
+      "Owner approval for first nudge, VIP skip list",
+      "Weekly 'recovered ₹' report on WhatsApp"
+    ],
+    "stack": "Kotlin Android with accessibility/notification listener (or Python backend + WhatsApp Business API), Claude API, Docker VPS for ledger parsing",
+    "build_days": 14,
+    "monetization": {
+      "model": "setup fee + retainer",
+      "price_inr": "Rs 2,999 setup + Rs 499/mo (or 3% of recovered)",
+      "price_usd": "$6/mo"
+    },
+    "where_to_sell": [
+      "Distributor/wholesaler associations",
+      "Field sales via local agencies",
+      "YouTube Telugu/Hindi small-business channels",
+      "Medical-store and kirana WhatsApp groups"
+    ],
+    "competition": "Khatabook/OkCredit send generic reminders; no culturally tuned escalation or auto-stop via SMS. Gap: relationship-aware tone, runs on own number.",
+    "first_10_customers": "Walk into 10 shops near the agency with a demo on the owner's own phone; pay-on-recovery for first month.",
+    "risks": "WhatsApp account ban risk with automated messaging, Android accessibility permission distribution outside Play Store.",
+    "creative_angle": "Bharat-first lens: on-device phone agents are trending for Chinese users; applied to the most universal Indian awkwardness — asking for money.",
+    "wow_moment": "Owner's phone screen runs by itself: sends nudge, customer pays on UPI, SMS arrives, ledger entry flips to green and the agent says 'ho gaya bhai'.",
+    "scores": {
+      "demand": 8,
+      "gap": 7,
+      "build_ease": 4,
+      "fit": 6,
+      "revenue": 7,
+      "novelty": 8,
+      "uniqueness": 3
+    },
+    "total": 43,
+    "uniqueness_verdict": "crowded",
+    "closest_competitors": [
+      {
+        "name": "OkCredit (automatic WhatsApp/SMS udhar reminders with UPI link, 1 Cr+ downloads)",
+        "url": "https://okcredit.in/payment-reminder-app"
+      },
+      {
+        "name": "Hisaab Babu (scheduled WhatsApp credit reminders with UPI QR)",
+        "url": "https://hisaabbabu.in/calculators/udhaar-recovery"
+      },
+      {
+        "name": "CashAlert (voice khata with reminder and WhatsApp request, closes khata on UPI match)",
+        "url": "https://cashalert.in/"
+      }
+    ],
+    "unique_twist": "Auto-reminders with UPI links are standard, and OkCredit alone has a huge installed base. The narrow gap is the delivery mechanism. Drive the shopkeeper's own personal WhatsApp on-device through accessibility automation, with no Business API, no template fees and no customer-side app. Add real escalation by relationship tier, with a promise-to-pay conversation in Telugu or Hinglish and an auto-stop when the bank or UPI SMS credit matches. Target wholesalers and distributors with large ledgers who will not move to a new ledger app, and sell it as a collections layer on top of whatever khata they already use. Check Play Store policy on accessibility use and SMS access before building.",
+    "id": 15,
+    "date": "2026-11-17",
+    "status": "new",
+    "doc_url": "https://docs.google.com/open?id=1qrnaNGBT9Jj6iB12VGWaauMl064yPY_M2XJUofQiGsY",
+    "doc_id": "1qrnaNGBT9Jj6iB12VGWaauMl064yPY_M2XJUofQiGsY"
   }
 ]
