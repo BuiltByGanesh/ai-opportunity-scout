@@ -23,11 +23,15 @@ def idea_sections(i: dict) -> list[dict]:
     m, sc = i.get("monetization", {}), i.get("scores", {})
     return [
         {"heading": "Summary", "text": f"{i.get('one_liner','')}\nCategory: {i.get('category','')}\n"
-                                        f"Score: {i.get('total',0)}/60  (demand {sc.get('demand')}, gap {sc.get('gap')}, "
+                                        f"Score: {i.get('total',0)}/{10 * len(sc) or 60}  (demand {sc.get('demand')}, gap {sc.get('gap')}, "
                                         f"build ease {sc.get('build_ease')}, fit {sc.get('fit')}, revenue {sc.get('revenue')}, novelty {sc.get('novelty')})\n"
                                         f"Status: {i.get('status','new')}   ·   Found: {i.get('date','')}"},
         {"heading": "Creative angle", "text": i.get("creative_angle", "")},
         {"heading": "Wow moment", "text": i.get("wow_moment", "")},
+        {"heading": "Uniqueness check", "text": f"{sc.get('uniqueness','-')}/10 - {i.get('uniqueness_verdict','not checked')}"
+                                                 + (f"\nTwist to stay unique: {i['unique_twist']}" if i.get("unique_twist") else ""),
+         "links": [{"text": f"Closest existing: {c.get('name','')}", "url": c.get("url", "")}
+                   for c in i.get("closest_competitors", [])]},
         {"heading": "Problem", "text": i.get("problem", "")},
         {"heading": "Target buyer", "text": i.get("target_buyer", "")},
         {"heading": "Market evidence", "links": [{"text": e.get("signal", ""), "url": e.get("url", "")}

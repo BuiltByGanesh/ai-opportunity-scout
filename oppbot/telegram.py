@@ -42,7 +42,7 @@ def format_idea(i: dict, full: bool = True) -> str:
     sc = i.get("scores", {})
     m = i.get("monetization", {})
     head = (
-        f"<b>#{i.get('id','?')} · {e(i.get('name'))}</b>  ⭐ {i.get('total', 0)}/60\n"
+        f"<b>#{i.get('id','?')} · {e(i.get('name'))}</b>  ⭐ {i.get('total', 0)}/{10 * len(i.get('scores', {})) or 60}\n"
         f"<i>{e(i.get('category'))}</i>\n"
         f"{e(i.get('one_liner'))}\n"
     )
@@ -59,6 +59,10 @@ def format_idea(i: dict, full: bool = True) -> str:
         head
         + (f"\n✨ <b>Angle:</b> {e(i.get('creative_angle'))}\n" if i.get("creative_angle") else "")
         + (f"🎬 <b>Wow moment:</b> {e(i.get('wow_moment'))}\n" if i.get("wow_moment") else "")
+        + (f"🔍 <b>Uniqueness:</b> {sc.get('uniqueness')}/10 ({e(i.get('uniqueness_verdict'))})"
+           + (" · closest: " + ", ".join(f"<a href=\"{e(c.get('url'))}\">{e(c.get('name'))}</a>" for c in i.get("closest_competitors", []))
+              if i.get("closest_competitors") else "") + "\n" if sc.get("uniqueness") else "")
+        + (f"🔀 <b>Twist to stay unique:</b> {e(i.get('unique_twist'))}\n" if i.get("unique_twist") else "")
         + f"\n<b>Problem:</b> {e(i.get('problem'))}\n"
         f"<b>Buyer:</b> {e(i.get('target_buyer'))}\n"
         f"<b>Evidence:</b>\n{ev}\n"
@@ -71,7 +75,7 @@ def format_idea(i: dict, full: bool = True) -> str:
         f"<b>First 10 customers:</b> {e(i.get('first_10_customers'))}\n"
         f"<b>Risk:</b> {e(i.get('risks'))}\n"
         f"📊 demand {sc.get('demand')} · gap {sc.get('gap')} · ease {sc.get('build_ease')} · "
-        f"fit {sc.get('fit')} · revenue {sc.get('revenue')} · novelty {sc.get('novelty')}\n"
+        f"fit {sc.get('fit')} · revenue {sc.get('revenue')} · novelty {sc.get('novelty')} · unique {sc.get('uniqueness', '-')}\n"
     )
 
 

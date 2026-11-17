@@ -192,11 +192,11 @@ def generate_ideas(signals: list[dict], n: int = config.IDEAS_PER_RUN, avoid: li
 RAW BRAINSTORM (stage 1):
 {raw}
 
-TASK (stage 2): pick the {n} best ideas from the brainstorm (you may sharpen, merge or twist them) and develop them fully.
+TASK (stage 2): pick the {n + 3} best ideas from the brainstorm (you may sharpen, merge or twist them) and develop them fully.
 Selection rules:
 - Every pick must be BOTH creative (novelty >= 7: a reader should say "huh, I've never seen that") AND sellable
   (a clear buyer who'd pay within 30 days of launch). Drop clever-but-unsellable and sellable-but-boring ideas.
-- Use at least 4 different lenses across the {n} picks; include at least one Bharat-first idea, one with global
+- Use at least 4 different lenses across the picks; include at least one Bharat-first idea, one with global
   SaaS potential, one buildable in under 7 days, and one wildcard that's bold but plausible.
 - Give each a memorable product name (not "AI-something" or "-GPT").
 - Don't repeat these previously suggested ideas: {avoid_txt}
@@ -210,7 +210,55 @@ Submit them with the submit_ideas tool. Field guide:
         sc = i.get("scores", {})
         i["total"] = sum(int(v) for v in sc.values() if str(v).isdigit())
         i.setdefault("evidence", []); i.setdefault("mvp_features", []); i.setdefault("where_to_sell", [])
-    return sorted(ideas, key=lambda x: x.get("total", 0), reverse=True)
+    ideas = verify_uniqueness(ideas)
+    # crowded ideas go last; then keep the best n
+    ideas.sort(key=lambda x: (x.get("uniqueness_verdict") != "crowded", x.get("total", 0)), reverse=True)
+    return ideas[:n]
+
+
+def verify_uniqueness(ideas: list[dict]) -> list[dict]:
+    """Stage 3: live web search for each idea's closest existing products. Scores uniqueness 1-10 and, for crowded
+    ideas, proposes a twist that makes them different. Falls back silently if web search isn't available."""
+    import anthropic
+    brief = [{"name": i["name"], "one_liner": i.get("one_liner", ""), "target_buyer": i.get("target_buyer", "")}
+             for i in ideas]
+    prompt = f"""For EACH product idea below, search the web (Product Hunt, Google, GitHub, app stores, G2) for products
+that already do the same thing for the same buyer. Be strict: if something close already exists and is easy to find,
+it is NOT unique.
+
+IDEAS:
+{json.dumps(brief, ensure_ascii=False, indent=2)}
+
+Then reply with JSON only:
+{{"results": [{{"name": "exact idea name", "uniqueness": 1-10,
+  "closest": [{{"name": "existing product", "url": "https://..."}}],
+  "verdict": "unique | differentiated | crowded",
+  "twist": "if differentiated/crowded: the concrete change that makes it clearly different; else ''"}}]}}
+10 = nothing like it exists; 7 = adjacent tools exist but not this; 4 = direct competitors exist; 1 = commodity."""
+    try:
+        msg = _client().messages.create(
+            model=config.CLAUDE_MODEL, max_tokens=8000,
+            system="You are a ruthless market researcher. Verify claims with search; never guess.",
+            tools=[{"type": "web_search_20250305", "name": "web_search", "max_uses": 3 * len(ideas)}],
+            messages=[{"role": "user", "content": prompt}],
+        )
+        text = "".join(getattr(b, "text", "") for b in msg.content if getattr(b, "type", "") == "text")
+        res = {r["name"]: r for r in _parse_json(text).get("results", [])}
+    except (anthropic.APIError, ValueError, KeyError) as e:
+        print(f"[warn] uniqueness check skipped: {e}")
+        return ideas
+    for i in ideas:
+        r = res.get(i["name"])
+        if not r:
+            continue
+        u = max(1, min(10, int(r.get("uniqueness", 5))))
+        i["scores"]["uniqueness"] = u
+        i["uniqueness_verdict"] = r.get("verdict", "")
+        i["closest_competitors"] = r.get("closest", [])[:3]
+        if r.get("twist"):
+            i["unique_twist"] = r["twist"]
+        i["total"] = sum(int(v) for v in i["scores"].values() if str(v).isdigit())
+    return ideas
 
 
 def build_plan(idea: dict) -> str:
