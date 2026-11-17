@@ -303,5 +303,323 @@
     "status": "new",
     "doc_url": "https://docs.google.com/open?id=1-EOYJEAQz2xfrdb0nHrpD3G9QqfrRouthoE9XtY3RsU",
     "doc_id": "1-EOYJEAQz2xfrdb0nHrpD3G9QqfrRouthoE9XtY3RsU"
+  },
+  {
+    "name": "Pileup",
+    "one_liner": "Simulates 1,000 synthetic customers through all your live email/SMS automations and shows who gets 9 messages on Tuesday, before real customers do.",
+    "category": "SaaS",
+    "problem": "Our Klaviyo/Braze/Shopify Email flows were built by different people over two years. Welcome flow, abandoned cart, browse abandon, winback and weekly campaigns all fire at once and customers get spammed. Nobody can see the combined picture, and unsubscribes keep creeping up.",
+    "target_buyer": "Lifecycle/CRM managers at Shopify D2C brands, and email agencies that manage 5-30 Klaviyo or Mailchimp accounts (India, US, UK, UAE).",
+    "evidence": [
+      {
+        "signal": "Demand for large-scale email infrastructure and anxiety about doing it right keeps showing up among SaaS builders",
+        "url": "https://www.reddit.com/r/SaaS/comments/1xsj8id/how_do_i_set_up_3k10k_email_inboxes_on_my_own/"
+      },
+      {
+        "signal": "Pomerado: turning any website into a deterministic agent-usable MCP, which suggests ESP UIs without full APIs can be read by agents",
+        "url": "https://news.ycombinator.com/item?id=50455811"
+      },
+      {
+        "signal": "People will not pay monthly for generic SaaS that Claude can build, so a niche tool needs real domain logic that vibe-coding can't replicate",
+        "url": "https://www.reddit.com/r/SaaS/comments/1xtdyd4/saas_is_dead_they_say_i_say_2_saved_it/"
+      }
+    ],
+    "solution": "Connect read-only via the Klaviyo/Mailchimp API (or a flow JSON export upload). The engine parses triggers, delays, splits, and frequency caps. It generates synthetic customer personas (new buyer, cart abandoner, lapsed VIP) and plays 30 days of events through every flow and campaign calendar. It outputs a per-persona 'inbox week' timeline, a collision heatmap, and a list of conflicts (two flows firing within 4 hours, a suppression missing, a promo after a post-purchase thanks). Claude writes the fix list in plain English, with priority order and the exact flow node to edit.",
+    "mvp_features": [
+      "Klaviyo read-only API connect + JSON export upload",
+      "Flow/campaign parser into a timeline model",
+      "6 synthetic personas and a 30-day simulation",
+      "Collision heatmap + 'inbox week' view per persona",
+      "LLM-written fix list with severity",
+      "Shareable PDF audit link for agencies"
+    ],
+    "stack": "Python (FastAPI) simulation engine, React + Recharts/Three.js-free timeline UI, Postgres, Claude API for fix explanations, Docker on Hostinger VPS",
+    "build_days": 10,
+    "monetization": {
+      "model": "subscription",
+      "price_inr": "Rs 2,999/mo per brand; Rs 14,999/mo agency (10 accounts); Rs 4,999 one-time audit",
+      "price_usd": "$39/mo per brand; $149/mo agency; $79 one-off audit"
+    },
+    "where_to_sell": [
+      "Klaviyo Partner/agency communities",
+      "LinkedIn outreach to lifecycle managers",
+      "r/KlaviyoHelp & r/EmailMarketing",
+      "Shopify D2C founder groups in India",
+      "Done-for-you Rs 4,999 audit as the lead-in"
+    ],
+    "competition": "Klaviyo's own analytics, Litmus/Email on Acid (rendering and spam tests), and deliverability tools check a single email. Nothing simulates cross-flow collisions as a customer-level story. The gap is the combined customer experience.",
+    "first_10_customers": "Offer 20 free audits via LinkedIn DMs to lifecycle managers and agency owners: 'I will show you the worst customer inbox week in your account'. Post one anonymized heatmap as a case study. Convert the audits to Rs 4,999 reports, then to subscriptions.",
+    "risks": "Flow logic differs per ESP and reverse-engineering it can be brittle. Mitigation: start with Klaviyo only and keep the simulation approximate but visually persuasive.",
+    "creative_angle": "Domain-expertise lens: enterprise CRM ops know that collisions, not single emails, drive unsubscribes. Nobody tests journeys the way QA tests code.",
+    "wow_moment": "A synthetic customer named 'Priya' scrolls down a vertical timeline with 11 emails and 3 SMS in 48 hours, each coloured by which flow sent it, with a red banner: 'You did this to her.'",
+    "scores": {
+      "demand": 8,
+      "gap": 8,
+      "build_ease": 6,
+      "fit": 9,
+      "revenue": 8,
+      "novelty": 8
+    },
+    "total": 47,
+    "id": 6,
+    "date": "2026-11-17",
+    "status": "new",
+    "doc_url": "https://docs.google.com/open?id=1PHREzML7WuQRt8B3DIj0tUx3RByKewEYsADC5Ab8Ux8",
+    "doc_id": "1PHREzML7WuQRt8B3DIj0tUx3RByKewEYsADC5Ab8Ux8"
+  },
+  {
+    "name": "Tone Shift",
+    "one_liner": "A Telegram bot that diffs this quarter's earnings-call and filing language against last quarter's for any NSE/BSE stock and flags what management stopped saying.",
+    "category": "Telegram/WhatsApp bot",
+    "problem": "Retail investors and small analysts can't read 40-page concall transcripts for 20 stocks every quarter. They read headline numbers, but the real tell is a change in language: guidance hedged, a segment no longer mentioned, 'strong demand' becoming 'selective demand'.",
+    "target_buyer": "Self-directed Indian retail investors, small PMS/AIF analysts, finfluencers and research-subscription creators (India).",
+    "evidence": [
+      {
+        "signal": "Agent that runs in the background and only sends a decision card when unsure: the right UX pattern for a watchlist digest",
+        "url": "https://github.com/KKKKhazix/agent-autoloop"
+      },
+      {
+        "signal": "Strong appetite for private/local tools that transcribe and summarize meetings (Yogurt)",
+        "url": "https://github.com/FrigadeHQ/yogurt"
+      },
+      {
+        "signal": "Local semantic search over documents and PDFs with OCR is gaining traction",
+        "url": "https://github.com/yjid/kensaku"
+      }
+    ],
+    "solution": "A pipeline pulls concall transcripts and filings PDFs from BSE/NSE announcements and company IR pages, chunks them by topic, and uses Claude to compare them to the previous 4 quarters. It outputs a card: 'Dropped: any mention of export margin. Added: 'cautious' x6. Capex guidance 800cr→'under review'. Confidence: high'. Each claim links back to a quote with a page number. Users add tickers to a watchlist in Telegram. It's strictly a summary of language changes, not buy/sell advice.",
+    "mvp_features": [
+      "/watch TICKER command and a watchlist",
+      "Auto-fetch of new concall transcripts/filings via BSE announcement feed",
+      "Quarter-over-quarter language diff with quotes",
+      "Hedge-word and topic-dropout scoring",
+      "Weekly digest with only changed stocks",
+      "Free 3 stocks, paid unlimited"
+    ],
+    "stack": "Python, python-telegram-bot, GitHub Actions cron for ingestion, SQLite/Postgres, pdfplumber, Claude API, Docker on Hostinger VPS",
+    "build_days": 6,
+    "monetization": {
+      "model": "subscription",
+      "price_inr": "Rs 499/mo (30 stocks); Rs 1,499/mo pro with exports",
+      "price_usd": "$7/mo; $19/mo"
+    },
+    "where_to_sell": [
+      "Finance Twitter/X and Telegram communities",
+      "Reddit r/IndiaInvestments (without advice)",
+      "Reels/YouTube shorts showing one diff per week",
+      "Partnerships with SEBI-registered research analysts as a white-label tool"
+    ],
+    "competition": "Screener.in, Trendlyne, and Tijori show numbers and raw transcripts; AI summarizers give a flat summary. Nobody ships a quarter-over-quarter language diff. The gap is the 'what changed' lens.",
+    "first_10_customers": "Post 5 'Tone Shift of the week' diffs on X and Telegram groups for well-known stocks, with the bot link. Offer free pro to 10 finfluencers who post their diffs. DM active Screener forum users.",
+    "risks": "SEBI regulations on advice and the legal gray area of transcript redistribution. Mitigation: show quotes with links only and carry disclaimers, with no recommendations.",
+    "creative_angle": "Market-domain lens: borrow the 'decision card' agent pattern and apply it to NLP diffing, an approach hedge funds use that retail has no access to.",
+    "wow_moment": "Type /diff TICKER and get a red/green strikethrough view of management's own sentences: 'Demand environment is strong' crossed out, 'Demand remains selective' in red.",
+    "scores": {
+      "demand": 7,
+      "gap": 7,
+      "build_ease": 8,
+      "fit": 9,
+      "revenue": 6,
+      "novelty": 8
+    },
+    "total": 45,
+    "id": 7,
+    "date": "2026-11-17",
+    "status": "new",
+    "doc_url": "https://docs.google.com/open?id=1ScigUyhhu95LGITC9SazCpLMd5PjjVQHJ5ho324qxxw",
+    "doc_id": "1ScigUyhhu95LGITC9SazCpLMd5PjjVQHJ5ho324qxxw"
+  },
+  {
+    "name": "Dukaan Hands",
+    "one_liner": "A done-for-you setup that turns a spare Rs 6,000 Android phone into an AI employee that taps through seller/partner apps that have no API.",
+    "category": "done-for-you service",
+    "problem": "I run a restaurant/kirana/online store and I spend 2 hours a day updating the same menu, stock and price in Swiggy, Zomato, Meesho, Flipkart Seller and the WhatsApp Business app, then copying UPI payments into a sheet. None of these apps have an API I can use.",
+    "target_buyer": "Cloud kitchens, restaurants, Meesho/Flipkart/Amazon resellers, and small retail owners in India, sold via agencies and freelancers who offer the setup.",
+    "evidence": [
+      {
+        "signal": "On-device Android agents that operate apps like a human are trending (Mika)",
+        "url": "https://github.com/wangzan101/Mika"
+      },
+      {
+        "signal": "MCP agents controlling a real phone with a human in the loop (Pinky)",
+        "url": "https://github.com/DIYgod/pinky"
+      },
+      {
+        "signal": "No-root Android APK with screen reading, scheduled and conditional automation (DSH-Android)",
+        "url": "https://github.com/jackwener/DSH-Android"
+      },
+      {
+        "signal": "Screen-change frame filtering that makes still screens nearly free in tokens, so always-on phone agents are affordable",
+        "url": "https://github.com/SAOS-3624/dsh-see-now"
+      }
+    ],
+    "solution": "Use open-source phone-agent runtimes (DSH-Android/Pinky/Poki) on a dedicated phone plugged into a charger in the shop. We ship tested 'recipes' as playbooks: 'Mark item out-of-stock in Swiggy + Zomato when the Google Sheet says 0', 'Reply to WhatsApp Business first-touch queries with catalog links', 'Every night, read PhonePe Business settlements and append to Sheet', 'Update Meesho price when the margin sheet changes'. The owner sends commands via Telegram/WhatsApp; the agent asks for approval on anything involving money. We handle onboarding, monitoring and recipe fixes when apps update.",
+    "mvp_features": [
+      "3 tested recipes: stock sync, UPI settlement to Sheets, WhatsApp Business triage",
+      "Telegram control and approval cards for risky actions",
+      "Daily screenshot-proof log of what the agent did",
+      "Remote health monitor and auto-restart",
+      "Recipe repair when the target app UI changes"
+    ],
+    "stack": "Open-source Android agent runtime (DSH-Android / Pinky via MCP), Claude/DeepSeek vision API, Python orchestrator, Telegram bot, Google Sheets API, Docker on Hostinger VPS for monitoring",
+    "build_days": 12,
+    "monetization": {
+      "model": "setup fee + retainer",
+      "price_inr": "Rs 7,999 setup + Rs 1,499/mo per recipe bundle",
+      "price_usd": "$99 setup + $19/mo"
+    },
+    "where_to_sell": [
+      "Cloud-kitchen and restaurant WhatsApp groups in Hyderabad",
+      "Meesho/Flipkart reseller Facebook groups",
+      "Local digital marketing agencies as a white-label add-on",
+      "Instagram reels showing a phone tapping by itself"
+    ],
+    "competition": "RPA tools (UiPath) are too costly and desktop-only; Petpooja/UrbanPiper do menu aggregation only for some POS systems and are expensive. The gap is a cheap physical agent for any app with no API.",
+    "first_10_customers": "Walk into 10 cloud kitchens around Hyderabad (Gachibowli/Madhapur) and offer a free week doing menu sync. Film it. Seed the video in local F&B groups. Convert to Rs 1,499/mo retainers.",
+    "risks": "Platform ToS and bot detection, UI breakage, and the reliability of agents handling money. Mitigation: human approval for financial actions, read-only recipes first, and monitoring.",
+    "creative_angle": "Signal-collision lens: Chinese on-device phone agents meet India's API-less seller-app economy, and an old phone becomes an employee.",
+    "wow_moment": "A phone propped on the counter, screen lit, opens Swiggy Partner by itself, toggles 'Paneer Tikka' off as the owner updates a Google Sheet. The owner didn't touch anything.",
+    "scores": {
+      "demand": 8,
+      "gap": 8,
+      "build_ease": 5,
+      "fit": 7,
+      "revenue": 7,
+      "novelty": 9
+    },
+    "total": 44,
+    "id": 8,
+    "date": "2026-11-17",
+    "status": "new",
+    "doc_url": "https://docs.google.com/open?id=1_ZDfEst7lKeLDrFpcUDYOtOK6jVZIAfel18esv53UQE",
+    "doc_id": "1_ZDfEst7lKeLDrFpcUDYOtOK6jVZIAfel18esv53UQE"
+  },
+  {
+    "name": "BoardWala",
+    "one_liner": "WhatsApp bot for signage and flex-printing shops: send a photo of a customer's shopfront and get a realistic mockup of their new signboard, in Telugu, Hindi or English, plus a price by sq ft in 30 seconds.",
+    "category": "Telegram/WhatsApp bot",
+    "problem": "Shop owners can't visualize a board from a rate card, so signage printers lose deals while they wait for a designer to do a Photoshop mockup. It takes a day, and the customer goes to the next printer.",
+    "target_buyer": "Signage, flex/vinyl printing and glow-sign shops, and sign-board makers in Tier 1-3 Indian cities, plus small outdoor-ad agencies.",
+    "evidence": [
+      {
+        "signal": "AI agents driving 3D/VFX engines headlessly (Vork) and Blender via MCP show scene generation from text is becoming scriptable",
+        "url": "https://github.com/voyager-so/vork"
+      },
+      {
+        "signal": "Blender MCP addon: LLMs build and render 3D scenes through tool calls",
+        "url": "https://github.com/hitkeeen/blender-ai-mcp-addon"
+      },
+      {
+        "signal": "Aircad shows professional 3D/CAD moving into the browser with AI",
+        "url": "https://aircad.com"
+      },
+      {
+        "signal": "Local businesses get found through Google listings, so shopfront photos are already everywhere",
+        "url": "https://news.ycombinator.com/item?id=50455454"
+      }
+    ],
+    "solution": "The printer forwards the shopfront photo and types 'Sri Lakshmi Sweets, green/gold, 12x3 ft, glow sign'. A pipeline detects the facade plane (vision model + homography), renders the board text in the right regional fonts via Three.js/Canvas with perspective, lighting and optional night 'glow' mode, and composites it onto the photo. It returns three variants and an auto-quote (area x material rate, set by the printer). One tap sends the mockup + quote to the customer's WhatsApp with the printer's branding.",
+    "mvp_features": [
+      "WhatsApp/Telegram photo intake",
+      "Facade plane detection and perspective compositing",
+      "Day/night glow rendering with 12 Indian-language fonts",
+      "Per-shop rate card and auto-quote",
+      "Branded shareable mockup with the shop's logo",
+      "Mockup history per customer"
+    ],
+    "stack": "Python bot (WhatsApp Cloud API/Telegram), Claude vision for plane/size estimation, OpenCV homography, Three.js headless render (Puppeteer), Docker on Hostinger VPS",
+    "build_days": 9,
+    "monetization": {
+      "model": "subscription",
+      "price_inr": "Rs 999/mo for 100 mockups; Rs 2,499/mo unlimited",
+      "price_usd": "$12/mo; $29/mo"
+    },
+    "where_to_sell": [
+      "Local walk-ins to signage shops in Hyderabad (Secunderabad/Begumpet signage markets)",
+      "IndiaMART signage seller community",
+      "YouTube demos in Telugu/Hindi",
+      "Facebook groups for flex printing and digital printing"
+    ],
+    "competition": "Canva/Photoshop need design skills and time; generic image generators garble Indic scripts and sizes. The gap is a vertical, regional-script, quote-ready tool for printers.",
+    "first_10_customers": "Visit 15 signage shops with a demo on a phone: shoot the shop's own storefront and show their board in 30 seconds. Offer a 2-week free trial and collect Rs 999 UPI on the spot.",
+    "risks": "Mockup realism across weird facades and Indic font rendering. Mitigation: ship constrained rectangular boards first with a manual corner-drag fallback.",
+    "creative_angle": "Visual/Three.js lens plus Bharat-first: regional-script mockups for a trade whose sales lever is 'show me how it'll look'.",
+    "wow_moment": "Walk up to a real shop, take a photo, and 30 seconds later the owner sees his own name glowing on a new signboard at night.",
+    "scores": {
+      "demand": 7,
+      "gap": 7,
+      "build_ease": 7,
+      "fit": 7,
+      "revenue": 6,
+      "novelty": 8
+    },
+    "total": 42,
+    "id": 9,
+    "date": "2026-11-17",
+    "status": "new",
+    "doc_url": "https://docs.google.com/open?id=1wCmgwC5jvrLJLaq8HOa4eQJ-bLV-tDjQkuJV3TuxrI0",
+    "doc_id": "1wCmgwC5jvrLJLaq8HOa4eQJ-bLV-tDjQkuJV3TuxrI0"
+  },
+  {
+    "name": "Second Wind",
+    "one_liner": "Paste your payment-processor closure or freeze email and get an evidence-backed appeal, a documentation checklist, and a pre-wired backup processor plan within 10 minutes.",
+    "category": "SaaS",
+    "problem": "Stripe/Razorpay/PayPal just shut down or froze my account after one invoice, never asked for evidence, and I'm losing revenue every day. I don't know what to say to appeal or where to go next.",
+    "target_buyer": "Small service businesses, lead-gen agencies, SaaS indie founders and freelancers worldwide, with a large Indian base on Razorpay/Cashfree/PayU/Stripe India.",
+    "evidence": [
+      {
+        "signal": "Small business whose Stripe account was closed after a $1,500 invoice, with no evidence requested, and many sympathetic replies",
+        "url": "https://news.ycombinator.com/item?id=50510042"
+      },
+      {
+        "signal": "Solo builders depend on a handful of vendors, and outages (Claude down) show single-vendor fragility",
+        "url": "https://news.ycombinator.com/item?id=50481347"
+      },
+      {
+        "signal": "Indie founders are shipping vibe-coded SaaS with real revenue, so more of them are exposed to payment risk",
+        "url": "https://news.ycombinator.com/item?id=50495982"
+      }
+    ],
+    "solution": "The user pastes the closure email and answers a short interview (business model, contract, how the customer consented, delivery proof). The agent classifies the likely trigger (high-risk category, dispute ratio, mismatch in business description, velocity spike), assembles an evidence index from uploaded files (contract, recorded-call consent, invoices, delivery logs), drafts the appeal in the processor's preferred format, and writes a customer-facing 'we're moving processors' note. It also outputs a backup stack plan: which alternative processors accept the category (Razorpay/Cashfree/PayPal/Lemon Squeezy/Paddle), with the application documents prefilled.",
+    "mvp_features": [
+      "Closure/freeze email parser with a reason classifier",
+      "Evidence interview and checklist",
+      "Appeal letter generator tailored to Stripe/Razorpay/PayPal",
+      "Backup processor matcher by category and country",
+      "Pre-risk 'health check' that scores your account risk before anything happens",
+      "Secure document vault with an evidence PDF export"
+    ],
+    "stack": "Laravel or Next.js app, Claude API, Postgres, S3-compatible storage, Stripe-independent billing via Razorpay and Gumroad, hosted on the Hostinger VPS",
+    "build_days": 6,
+    "monetization": {
+      "model": "per-use",
+      "price_inr": "Rs 2,499 per case; Rs 499/mo risk monitor",
+      "price_usd": "$39 per case; $9/mo monitor"
+    },
+    "where_to_sell": [
+      "Answer HN/Reddit/IndieHackers threads about account closures",
+      "SEO pages: 'Stripe closed my account', 'Razorpay account on hold'",
+      "Freelancer communities and agency Slack groups",
+      "Lead-gen and SaaS founder X/Twitter"
+    ],
+    "competition": "Generic lawyers and forums give advice but no workflow; processors' own support is opaque. Few tools combine an evidence pack, appeal drafting and a failover plan. The gap is panic-time tooling.",
+    "first_10_customers": "Publish a free 'appeal letter checker' and reply with it in 10-15 live HN/Reddit closure threads. Convert the 'needs help now' cases to $39 packages and gather testimonials.",
+    "risks": "Appeals have no guaranteed outcome and need disclaimers. It can be seen as an advice service. Mitigation: position as documentation tooling with transparent outcome stats.",
+    "creative_angle": "Pain-mining lens: a viral HN panic thread is a pay-now moment, and the product sells to a customer at peak urgency.",
+    "wow_moment": "Paste the cold rejection email and 10 minutes later you have a polished 3-page appeal with a numbered evidence index, plus a 'switch plan' that lists the exact 3 processors that would take you.",
+    "scores": {
+      "demand": 8,
+      "gap": 6,
+      "build_ease": 8,
+      "fit": 6,
+      "revenue": 7,
+      "novelty": 7
+    },
+    "total": 42,
+    "id": 10,
+    "date": "2026-11-17",
+    "status": "new",
+    "doc_url": "https://docs.google.com/open?id=1H48DOtzP-DUosQsMKUCOe7_lYCZ6hwMyRNBSo5GLDDg",
+    "doc_id": "1H48DOtzP-DUosQsMKUCOe7_lYCZ6hwMyRNBSo5GLDDg"
   }
 ]
