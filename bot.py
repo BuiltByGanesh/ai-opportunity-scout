@@ -5,6 +5,7 @@ Commands:
   /niche <text>          ideas for a specific niche, e.g. /niche dental clinics India
   /category <name|1-12>  ideas inside one AI agent category, e.g. /category sales
   /categories            show the 12 categories
+  /catalog <name|all>    one AI agent per industry for a category (or all 12)
   /plan <id>             full build-and-sell plan for an idea
   /list                  last 10 ideas
   /status <id> <state>   new | shortlisted | building | launched | killed
@@ -59,6 +60,14 @@ def handle(msg: dict) -> None:
             return
         telegram.send(f"🔎 Finding unique {c['name']} agents…", chat_id=chat, html=False)
         scout(category=c["key"], chat_id=chat)
+    elif cmd == "/catalog":
+        from oppbot import catalog
+        target = arg or "all"
+        if target != "all" and not categories.find(target):
+            telegram.send("Usage: /catalog <name or 1-12 | all>\n" + categories.table(), chat_id=chat, html=False)
+            return
+        telegram.send(f"🗂 Building AI agent catalog for: {target} (one agent per industry)…", chat_id=chat, html=False)
+        catalog.run(target, chat_id=chat)
     elif cmd == "/plan":
         if not arg.isdigit():
             telegram.send("Usage: /plan <id>", chat_id=chat, html=False)
@@ -92,6 +101,7 @@ def main() -> None:
         {"command": "niche", "description": "Ideas for a specific niche"},
         {"command": "category", "description": "Ideas in one AI agent category"},
         {"command": "categories", "description": "List the 12 agent categories"},
+        {"command": "catalog", "description": "AI agent per industry for a category (or all)"},
         {"command": "plan", "description": "Build-and-sell plan for an idea ID"},
         {"command": "list", "description": "Recent ideas"},
         {"command": "status", "description": "Track an idea's status"},

@@ -11,6 +11,9 @@ on:
       category:
         description: "Optional agent category (1-12 or name: support, documents, operations, sales, data, devqa, hr, education, health, supply, security, research)"
         required: false
+      catalog:
+        description: "Optional: build AI agent catalog - 'all' or a category (one agent per industry, Drive doc per category)"
+        required: false
       plan_id:
         description: "Optional: idea ID to get a full build plan"
         required: false
@@ -40,8 +43,11 @@ jobs:
           IN_PLAN: ${{ github.event.inputs.plan_id }}
           IN_NICHE: ${{ github.event.inputs.niche }}
           IN_CATEGORY: ${{ github.event.inputs.category }}
+          IN_CATALOG: ${{ github.event.inputs.catalog }}
         run: |
-          if [ -n "$IN_PLAN" ]; then
+          if [ -n "$IN_CATALOG" ]; then
+            python run_scout.py --catalog "$IN_CATALOG"
+          elif [ -n "$IN_PLAN" ]; then
             python run_scout.py --plan "$IN_PLAN"
           elif [ -n "$IN_NICHE" ] || [ -n "$IN_CATEGORY" ]; then
             python run_scout.py ${IN_NICHE:+--niche "$IN_NICHE"} ${IN_CATEGORY:+--category "$IN_CATEGORY"}

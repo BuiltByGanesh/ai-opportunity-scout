@@ -32,6 +32,12 @@ To run a single category: `python run_scout.py --category sales`, `/category 2` 
 | 11 | `security` | Cybersecurity operations | Technology, finance, enterprises | High |
 | 12 | `research` | Research & knowledge assistance | Consulting, legal, engineering, R&D | Medium |
 
+## AI agent catalog (one agent per category × industry)
+`python run_scout.py --catalog all` (or `/catalog all` in Telegram, or the *catalog* box in Run workflow) suggests one
+specific, sellable AI agent for **every industry in every category**: 47 agents in total. For each one you get the buyer, its tasks,
+integrations, what makes it different, a wow moment, stack, build days, difficulty, INR/USD pricing, first customers and risks.
+You get one Google Doc per category in the Drive folder and one Telegram message per category. Use `--catalog sales` for a single category.
+
 ## Setup (5 min)
 1. Create a bot with @BotFather. Copy the token and add the bot to your channel as an admin.
 2. Get an Anthropic API key: console.anthropic.com

@@ -5,6 +5,8 @@ Usage:
   python run_scout.py --niche "real estate agents in India"
   python run_scout.py --category sales     # all ideas in one agent category (key, 1-12, or name)
   python run_scout.py --categories         # print the category map
+  python run_scout.py --catalog all        # one AI agent per industry for all 12 categories (Drive doc per category)
+  python run_scout.py --catalog sales      # same, one category
   python run_scout.py --plan 3             # send full build plan for idea #3
   python run_scout.py --export             # write data/ideas.csv
   python run_scout.py --offline            # skip web scan, Claude uses own knowledge
@@ -54,12 +56,16 @@ if __name__ == "__main__":
     ap.add_argument("--niche")
     ap.add_argument("--category")
     ap.add_argument("--categories", action="store_true")
+    ap.add_argument("--catalog")
     ap.add_argument("--plan", type=int)
     ap.add_argument("--export", action="store_true")
     ap.add_argument("--offline", action="store_true")
     a = ap.parse_args()
     if a.categories:
         print(categories.table())
+    elif a.catalog:
+        from oppbot import catalog
+        catalog.run(a.catalog)
     elif a.export:
         print(store.export_csv())
     elif a.plan:
