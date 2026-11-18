@@ -21,6 +21,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: scout
+  cancel-in-progress: false
+
 jobs:
   scout:
     runs-on: ubuntu-latest
@@ -61,4 +65,4 @@ jobs:
           git config user.email "scout-bot@users.noreply.github.com"
           git add data/
           git diff --cached --quiet || git commit -m "scout: ideas $(date +%F)"
-          git push
+          for i in 1 2 3; do git pull --rebase -X theirs origin main && git push && break; sleep 5; done
