@@ -8,6 +8,9 @@ on:
       niche:
         description: "Optional niche (e.g. 'CA firms in India')"
         required: false
+      category:
+        description: "Optional agent category (1-12 or name: support, documents, operations, sales, data, devqa, hr, education, health, supply, security, research)"
+        required: false
       plan_id:
         description: "Optional: idea ID to get a full build plan"
         required: false
@@ -36,11 +39,12 @@ jobs:
           GDRIVE_WEBHOOK_SECRET: ${{ secrets.GDRIVE_WEBHOOK_SECRET }}
           IN_PLAN: ${{ github.event.inputs.plan_id }}
           IN_NICHE: ${{ github.event.inputs.niche }}
+          IN_CATEGORY: ${{ github.event.inputs.category }}
         run: |
           if [ -n "$IN_PLAN" ]; then
             python run_scout.py --plan "$IN_PLAN"
-          elif [ -n "$IN_NICHE" ]; then
-            python run_scout.py --niche "$IN_NICHE"
+          elif [ -n "$IN_NICHE" ] || [ -n "$IN_CATEGORY" ]; then
+            python run_scout.py ${IN_NICHE:+--niche "$IN_NICHE"} ${IN_CATEGORY:+--category "$IN_CATEGORY"}
           else
             python run_scout.py
           fi

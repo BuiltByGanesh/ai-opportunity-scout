@@ -12,6 +12,26 @@ A Telegram bot that finds **AI agents / AI products you can build and sell**, ba
 3. **Posts a digest to Telegram.** The top idea is labelled "Build this week", which fits the one-AI-project-a-week plan.
 4. **Keeps a history** in `data/ideas.json` and `data/ideas.csv` so ideas are never repeated. You can track each one: new → shortlisted → building → launched/killed.
 
+## AI agent categories
+Every idea is tagged with one of 12 agent categories, plus its industry and how hard it is to build. Ideas must use at least 4 categories, and each one has to be sharper than the category's obvious example.
+Each week **2 categories are spotlighted** (at least 2 ideas come from them), so all 12 are covered every 6 weeks.
+To run a single category: `python run_scout.py --category sales`, `/category 2` in Telegram, or the *category* box in GitHub's Run workflow.
+
+| # | Key | Category | Industries | Difficulty |
+|---|---|---|---|---|
+| 1 | `support` | Customer support | Retail, banking, travel, SaaS, telecom | Medium |
+| 2 | `documents` | Document processing | Finance, insurance, legal, logistics | Medium |
+| 3 | `operations` | Business operations | Almost every industry | Medium |
+| 4 | `sales` | Sales & lead management | Real estate, agencies, manufacturing, SaaS | Medium |
+| 5 | `data` | Data analysis & reporting | Retail, finance, manufacturing, services | Medium-High |
+| 6 | `devqa` | Software development & QA | Technology and businesses with software teams | Medium-High |
+| 7 | `hr` | HR & employee assistance | Almost every industry | Medium |
+| 8 | `education` | Education & training | Schools, coaching, corporate learning | Medium |
+| 9 | `health` | Healthcare administration | Clinics, hospitals, diagnostic centres | High |
+| 10 | `supply` | Supply chain & inventory | Manufacturing, retail, distribution | High |
+| 11 | `security` | Cybersecurity operations | Technology, finance, enterprises | High |
+| 12 | `research` | Research & knowledge assistance | Consulting, legal, engineering, R&D | Medium |
+
 ## Setup (5 min)
 1. Create a bot with @BotFather. Copy the token and add the bot to your channel as an admin.
 2. Get an Anthropic API key: console.anthropic.com
@@ -40,6 +60,8 @@ Commands in Telegram:
 |---|---|
 | `/scout` | Fresh market scan + top ideas |
 | `/niche CA firms in India` | Ideas for one market |
+| `/category sales` | Ideas within one agent category (name or 1-12) |
+| `/categories` | Show the 12 categories |
 | `/plan 3` | Day-by-day build plan, architecture, pricing tiers, launch checklist, kill metric |
 | `/list` | Last 10 ideas |
 | `/status 3 building` | Track progress |

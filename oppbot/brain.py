@@ -2,14 +2,17 @@
 import json
 import re
 
-from . import config
+from . import categories, config
 
 IDEA_SCHEMA = """{
   "ideas": [
     {
       "name": "short product name",
       "one_liner": "what it does in one sentence",
-      "category": "AI agent | SaaS | Telegram/WhatsApp bot | Chrome extension | template/kit | done-for-you service",
+      "agent_category": "exactly one category name from the AI agent category map",
+      "industry": "the specific industry/vertical it targets",
+      "difficulty": "Medium | Medium-High | High (build difficulty)",
+      "category": "product form: AI agent | SaaS | Telegram/WhatsApp bot | Chrome extension | template/kit | done-for-you service",
       "problem": "the pain, in the buyer's words",
       "target_buyer": "who pays (be specific: role + business type + region)",
       "evidence": [{"signal": "short summary", "url": "source url from the signals"}],
@@ -93,6 +96,8 @@ IDEAS_TOOL = {
                     "type": "object",
                     "properties": {
                         "name": {"type": "string"}, "one_liner": {"type": "string"}, "category": {"type": "string"},
+                        "agent_category": {"type": "string", "enum": categories.NAMES}, "industry": {"type": "string"},
+                        "difficulty": {"type": "string"},
                         "problem": {"type": "string"}, "target_buyer": {"type": "string"},
                         "evidence": {"type": "array", "items": {"type": "object", "properties": {
                             "signal": {"type": "string"}, "url": {"type": "string"}}}},
@@ -158,9 +163,10 @@ def _fmt_signals(signals: list[dict]) -> str:
     return "\n".join(lines)
 
 
-def brainstorm(signals: list[dict], avoid_txt: str, niche: str | None, k: int = 24) -> str:
+def brainstorm(signals: list[dict], avoid_txt: str, niche: str | None, k: int = 24, focus: dict | None = None) -> str:
     """Stage 1 (divergent): many raw, diverse ideas across creative lenses."""
     niche_txt = f"Every idea must serve this niche: {niche}.\n" if niche else ""
+    niche_txt += categories.prompt_block(focus)
     prompt = f"""BUILDER PROFILE:
 {config.BUILDER_PROFILE}
 
@@ -172,17 +178,18 @@ Brainstorm {k} AI product ideas.
 
 Already suggested before (don't repeat or lightly reword): {avoid_txt}
 
-Format: a numbered list. Each line: NAME - one-line pitch - [lens #] - signal URL(s) it connects to (or 'knowledge').
+Format: a numbered list. Each line: NAME - one-line pitch - [category] [lens #] - signal URL(s) it connects to (or 'knowledge').
 Be specific and surprising. Plain text, no JSON."""
     return _ask(prompt, max_tokens=6000, system=BRAINSTORM_SYSTEM)
 
 
 def generate_ideas(signals: list[dict], n: int = config.IDEAS_PER_RUN, avoid: list[str] | None = None,
-                   niche: str | None = None) -> list[dict]:
+                   niche: str | None = None, focus: dict | None = None) -> list[dict]:
     avoid_txt = ", ".join(avoid or []) or "none"
-    raw = brainstorm(signals, avoid_txt, niche)
+    raw = brainstorm(signals, avoid_txt, niche, focus=focus)
     print(f"[info] brainstorm:\n{raw[:1500]}")
     niche_txt = f"Focus only on this niche: {niche}.\n" if niche else ""
+    niche_txt += categories.prompt_block(focus)
     prompt = f"""BUILDER PROFILE:
 {config.BUILDER_PROFILE}
 
@@ -222,13 +229,13 @@ def _keep_unique(ideas: list[dict]) -> tuple[list[dict], list[str]]:
 
 
 def generate_unique_ideas(signals: list[dict], n: int = config.IDEAS_PER_RUN, avoid: list[str] | None = None,
-                          niche: str | None = None, rounds: int = 2) -> list[dict]:
+                          niche: str | None = None, rounds: int = 2, focus: dict | None = None) -> list[dict]:
     """Brainstorm -> develop -> web-verify. Ideas that already exist are dropped; if too few survive,
     run another round that avoids them. Never pads the digest with copycat ideas."""
     avoid = list(avoid or [])
     found: list[dict] = []
     for r in range(rounds):
-        batch = generate_ideas(signals, n=n, avoid=avoid + [i["name"] for i in found], niche=niche)
+        batch = generate_ideas(signals, n=n, avoid=avoid + [i["name"] for i in found], niche=niche, focus=focus)
         keep, dropped = _keep_unique(batch)
         print(f"[info] round {r + 1}: kept {[i['name'] for i in keep]}, dropped as existing {dropped}")
         found += keep

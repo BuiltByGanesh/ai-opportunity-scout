@@ -43,7 +43,8 @@ def format_idea(i: dict, full: bool = True) -> str:
     m = i.get("monetization", {})
     head = (
         f"<b>#{i.get('id','?')} · {e(i.get('name'))}</b>  ⭐ {i.get('total', 0)}/{10 * len(i.get('scores', {})) or 60}\n"
-        f"<i>{e(i.get('category'))}</i>\n"
+        f"<i>🗂 {e(i.get('agent_category') or '')} · {e(i.get('industry') or '')} · {e(i.get('category'))}"
+        f"{' · ⚙️ ' + e(i.get('difficulty')) if i.get('difficulty') else ''}</i>\n"
         f"{e(i.get('one_liner'))}\n"
     )
     if i.get("doc_url"):

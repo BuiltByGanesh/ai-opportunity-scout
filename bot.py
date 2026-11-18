@@ -3,6 +3,8 @@
 Commands:
   /scout                 fresh market scan + top ideas
   /niche <text>          ideas for a specific niche, e.g. /niche dental clinics India
+  /category <name|1-12>  ideas inside one AI agent category, e.g. /category sales
+  /categories            show the 12 categories
   /plan <id>             full build-and-sell plan for an idea
   /list                  last 10 ideas
   /status <id> <state>   new | shortlisted | building | launched | killed
@@ -11,7 +13,7 @@ Commands:
 import time
 import traceback
 
-from oppbot import config, store, telegram
+from oppbot import categories, config, store, telegram
 from run_scout import plan, scout
 
 HELP = __doc__.split("Commands:")[1]
@@ -48,6 +50,15 @@ def handle(msg: dict) -> None:
             return
         telegram.send(f"🔎 Finding AI products for: {arg}", chat_id=chat, html=False)
         scout(niche=arg, chat_id=chat)
+    elif cmd == "/categories":
+        telegram.send("🗂 AI agent categories\n" + categories.table(), chat_id=chat, html=False)
+    elif cmd == "/category":
+        c = categories.find(arg)
+        if not c:
+            telegram.send("Usage: /category <name or 1-12>\n" + categories.table(), chat_id=chat, html=False)
+            return
+        telegram.send(f"🔎 Finding unique {c['name']} agents…", chat_id=chat, html=False)
+        scout(category=c["key"], chat_id=chat)
     elif cmd == "/plan":
         if not arg.isdigit():
             telegram.send("Usage: /plan <id>", chat_id=chat, html=False)
@@ -79,6 +90,8 @@ def main() -> None:
     telegram.call("setMyCommands", commands=[
         {"command": "scout", "description": "Fresh market scan + top AI ideas"},
         {"command": "niche", "description": "Ideas for a specific niche"},
+        {"command": "category", "description": "Ideas in one AI agent category"},
+        {"command": "categories", "description": "List the 12 agent categories"},
         {"command": "plan", "description": "Build-and-sell plan for an idea ID"},
         {"command": "list", "description": "Recent ideas"},
         {"command": "status", "description": "Track an idea's status"},

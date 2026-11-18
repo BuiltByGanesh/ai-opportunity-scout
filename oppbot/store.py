@@ -54,7 +54,7 @@ def recent_names(limit: int = 60) -> list[str]:
 def export_csv(path=None) -> str:
     import csv
     path = path or (config.DATA_DIR / "ideas.csv")
-    cols = ["id", "date", "status", "name", "category", "one_liner", "target_buyer", "build_days", "price_inr", "price_usd", "total"]
+    cols = ["id", "date", "status", "name", "agent_category", "industry", "difficulty", "category", "one_liner", "target_buyer", "build_days", "price_inr", "price_usd", "total"]
     with open(path, "w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=cols)
         w.writeheader()
